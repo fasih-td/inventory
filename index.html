@@ -1156,485 +1156,87 @@ tr:hover td {
 <div id="employeeModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="employeeModalTitle">Add Employee</h3><button class="close-modal" onclick="closeEmployeeModal()">×</button></div><div class="modal-body"><input type="hidden" id="employeeId"><div class="form-group"><label>Full Name</label><input id="empName"></div><div class="form-group"><label>Employee ID</label><input id="empId"></div><div class="form-group"><label>Designation</label><input id="empDesignation"></div><div class="form-group"><label>Department</label><select id="empDept"><option>IT</option><option>Engineering</option><option>Sales</option><option>HR</option><option>Finance</option><option>Marketing</option><option>Operations</option></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeEmployeeModal()">Cancel</button><button class="btn-primary" id="saveEmployeeBtn">Save</button></div></div></div>
 
 <div id="repairModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3>Mark as Repaired</h3><button class="close-modal" onclick="closeRepairModal()">×</button></div><div class="modal-body"><input type="hidden" id="repairAssetId"><div class="form-group"><label>Issue Description</label><textarea id="repairIssueDesc" placeholder="Describe the issue..."></textarea></div><div class="form-group"><label>Resolution / Fix Applied</label><textarea id="repairResolution" placeholder="What was done to fix it..."></textarea></div><div class="form-group"><label>Technician Name</label><input id="repairTechnician" placeholder="Who performed the repair"></div><div class="form-group"><label>Repaired Date</label><input type="date" id="repairDate"></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeRepairModal()">Cancel</button><button class="btn-primary" id="confirmRepairBtn">Complete Repair</button></div></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <script>
-// ========== LOGIN LOGIC ==========
-function checkAuth() {
-    if (sessionStorage.getItem('it_inventory_auth') === 'true') {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'flex';
-    }
-}
-
-function attemptLogin(e) {
-    e.preventDefault();
-    const user = document.getElementById('loginUser').value;
-    const pass = document.getElementById('loginPass').value;
-    
-    if (user === 'admin' && pass === 'admin') {
-        sessionStorage.setItem('it_inventory_auth', 'true');
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'flex';
-        document.getElementById('loginError').style.display = 'none';
-        showToast("Logged in successfully!");
-    } else {
-        document.getElementById('loginError').style.display = 'block';
-    }
-}
-
-function logout() {
-    sessionStorage.removeItem('it_inventory_auth');
-    document.getElementById('loginUser').value = '';
-    document.getElementById('loginPass').value = '';
-    document.getElementById('mainApp').style.display = 'none';
-    document.getElementById('loginScreen').style.display = 'flex';
-    showToast("Logged out successfully");
-}
-
-// Call on load
-checkAuth();
-
-// ========== PERSISTENT STORAGE WITH LOCALSTORAGE ==========
-const STORAGE_KEYS = {
-    ASSETS: 'it_inventory_assets',
-    EMPLOYEES: 'it_inventory_employees',
-    REPAIRED_LOGS: 'it_inventory_repaired_logs',
-    NEXT_IDS: 'it_inventory_next_ids'
+// 2. Your Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAtHQpvQfF8LPB_1RWUkP78H2a5Uxf7y_Y",
+  authDomain: "td-inventory-26899.firebaseapp.com",
+  databaseURL: "https://td-inventory-26899-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "td-inventory-26899",
+  storageBucket: "td-inventory-26899.firebasestorage.app",
+  messagingSenderId: "410375061005",
+  appId: "1:410375061005:web:76e5f2bf5c0bb5528d1f44",
+  measurementId: "G-HJSNW0J7LT"
 };
 
-const DEFAULT_ASSETS = [
-    { id: 1, tag: "IT-LAP-001", category: "Laptop", brand: "Dell", model: "Latitude 5440", employee: "Ahmed Raza", status: "Assigned" },
-    { id: 2, tag: "IT-MOU-002", category: "Mouse", brand: "Logitech", model: "MX Master 3", employee: "", status: "In Stock" },
-    { id: 3, tag: "IT-KBD-003", category: "Keyboard", brand: "Keychron", model: "K2 Pro", employee: "", status: "In Stock" },
-    { id: 4, tag: "IT-LAP-004", category: "Laptop", brand: "HP", model: "EliteBook 840", employee: "Sana Khan", status: "Assigned" },
-    { id: 5, tag: "IT-HDP-005", category: "Headphones", brand: "Sony", model: "WH-1000XM5", employee: "Bilal Ahmed", status: "Faulty" },
-    { id: 6, tag: "IT-MON-006", category: "Monitor", brand: "Dell", model: "UltraSharp 27", employee: "", status: "Faulty" },
-    { id: 7, tag: "IT-LAP-007", category: "Laptop", brand: "Apple", model: "MacBook Pro M2", employee: "Fatima Z.", status: "Assigned" },
-    { id: 8, tag: "IT-DOCK-008", category: "Docking Station", brand: "Lenovo", model: "Thunderbolt 4", employee: "", status: "In Stock" },
-];
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-const DEFAULT_EMPLOYEES = [
-    { id: 1, name: "Ahmed Raza", empId: "EMP001", designation: "IT Support Lead", department: "IT" },
-    { id: 2, name: "Sana Khan", empId: "EMP002", designation: "Software Engineer", department: "Engineering" },
-    { id: 3, name: "Bilal Ahmed", empId: "EMP003", designation: "Sales Manager", department: "Sales" },
-    { id: 4, name: "Fatima Z.", empId: "EMP004", designation: "HR Generalist", department: "HR" },
-];
-
-const DEFAULT_REPAIRED_LOGS = [
-    { id: 1, assetTag: "IT-LAP-003", category: "Laptop", brandModel: "Lenovo ThinkPad X1", issueDesc: "Screen flickering and random shutdowns", resolution: "Replaced display cable and updated BIOS", issueDate: "2025-01-10", repairedDate: "2025-01-15", technician: "Ahmed Raza" },
-    { id: 2, assetTag: "IT-MOU-002", category: "Mouse", brandModel: "Logitech MX Master 3", issueDesc: "Bluetooth pairing failure", resolution: "Firmware update", issueDate: "2025-02-01", repairedDate: "2025-02-05", technician: "Usman Ali" },
-];
-
+// 3. Global State
 let assets = [];
 let employees = [];
 let repairedLogs = [];
-let nextAssetId = 1, nextEmpId = 1, nextRepairId = 1;
+let nextAssetId = 1;
+let nextEmpId = 1;
 
-function loadData() {
-    const savedAssets = localStorage.getItem(STORAGE_KEYS.ASSETS);
-    if (savedAssets) assets = JSON.parse(savedAssets);
-    else { assets = JSON.parse(JSON.stringify(DEFAULT_ASSETS)); saveAssets(); }
-    
-    const savedEmployees = localStorage.getItem(STORAGE_KEYS.EMPLOYEES);
-    if (savedEmployees) employees = JSON.parse(savedEmployees);
-    else { employees = JSON.parse(JSON.stringify(DEFAULT_EMPLOYEES)); saveEmployees(); }
-    
-    const savedLogs = localStorage.getItem(STORAGE_KEYS.REPAIRED_LOGS);
-    if (savedLogs) repairedLogs = JSON.parse(savedLogs);
-    else { repairedLogs = JSON.parse(JSON.stringify(DEFAULT_REPAIRED_LOGS)); saveRepairedLogs(); }
-    
-    const savedIds = localStorage.getItem(STORAGE_KEYS.NEXT_IDS);
-    if (savedIds) {
-        const ids = JSON.parse(savedIds);
-        nextAssetId = ids.nextAssetId || (Math.max(...assets.map(a => a.id), 0) + 1);
-        nextEmpId = ids.nextEmpId || (Math.max(...employees.map(e => e.id), 0) + 1);
-        nextRepairId = ids.nextRepairId || (Math.max(...repairedLogs.map(l => l.id), 0) + 1);
-    } else {
-        nextAssetId = Math.max(...assets.map(a => a.id), 0) + 1;
-        nextEmpId = Math.max(...employees.map(e => e.id), 0) + 1;
-        nextRepairId = Math.max(...repairedLogs.map(l => l.id), 0) + 1;
-        saveNextIds();
-    }
-}
-
-function saveAssets() { localStorage.setItem(STORAGE_KEYS.ASSETS, JSON.stringify(assets)); }
-function saveEmployees() { localStorage.setItem(STORAGE_KEYS.EMPLOYEES, JSON.stringify(employees)); }
-function saveRepairedLogs() { localStorage.setItem(STORAGE_KEYS.REPAIRED_LOGS, JSON.stringify(repairedLogs)); }
-function saveNextIds() { localStorage.setItem(STORAGE_KEYS.NEXT_IDS, JSON.stringify({ nextAssetId, nextEmpId, nextRepairId })); }
-
-function showToast(message, isError = false) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.style.background = isError ? '#dc2626' : '#10b981';
-    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-}
-
-let editingAssetId = null, editingEmployeeId = null, pendingRepairAsset = null;
-
-function updateCounters() {
-    document.getElementById("totalAssetsStat").innerText = assets.length;
-    document.getElementById("assignedStat").innerText = assets.filter(a => a.status === "Assigned").length;
-    document.getElementById("instockStat").innerText = assets.filter(a => a.status === "In Stock").length;
-    document.getElementById("faultyStat").innerText = assets.filter(a => a.status === "Faulty").length;
-    document.getElementById("assetsCount").innerText = assets.length;
-    document.getElementById("employeesCount").innerText = employees.length;
-    document.getElementById("faultyCount").innerText = assets.filter(a => a.status === "Faulty").length;
-    document.getElementById("repairedCount").innerText = repairedLogs.length;
-}
-
-function getStatusBadge(status) {
-    if(status === "Assigned") return `<span class="badge badge-green"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Assigned</span>`;
-    if(status === "In Stock") return `<span class="badge badge-yellow"><i class="fas fa-circle" style="font-size:0.5rem;"></i> In Stock</span>`;
-    return `<span class="badge badge-red"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Faulty</span>`;
-}
-
-// ==== Custom Dropdown Logic ====
-function toggleEmployeeDropdown() {
-    document.getElementById('employeeDropdownList').classList.toggle('show');
-    document.getElementById('selectedEmployeeDisplay').classList.toggle('active');
-    if (document.getElementById('employeeDropdownList').classList.contains('show')) {
-        document.getElementById('employeeDropdownSearch').focus();
-    }
-}
-
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.custom-select-container')) {
-        document.getElementById('employeeDropdownList')?.classList.remove('show');
-        document.getElementById('selectedEmployeeDisplay')?.classList.remove('active');
-    }
-});
-
-function populateEmployeeDropdown(selectedValue = "") {
-    const container = document.getElementById('employeeOptionsContainer');
-    let html = `<div class="custom-option ${selectedValue === '' ? 'selected' : ''}" onclick="selectEmployee('', 'Select Employee...')"><em>None (In Stock / Faulty)</em></div>`;
-    
-    employees.forEach(emp => {
-        let isSelected = selectedValue === emp.name;
-        html += `<div class="custom-option ${isSelected ? 'selected' : ''}" onclick="selectEmployee('${emp.name}', '${emp.name} (${emp.empId})')">
-                    <span>${emp.name}</span>
-                    <span class="emp-id">${emp.empId}</span>
-                 </div>`;
+// 4. THE LIVE SYNC LOGIC (Replaces loadData)
+// This listens to the database. If you change data on one PC, 
+// it instantly updates on all other PCs.
+function initRealtimeSync() {
+    // Sync Assets
+    db.ref('assets').on('value', (snapshot) => {
+        const data = snapshot.val();
+        assets = data ? Object.values(data) : [];
+        nextAssetId = assets.length > 0 ? Math.max(...assets.map(a => a.id)) + 1 : 1;
+        refreshUI();
     });
-    container.innerHTML = html;
-}
 
-function filterEmployeeDropdown() {
-    const query = document.getElementById('employeeDropdownSearch').value.toLowerCase();
-    const options = document.querySelectorAll('#employeeOptionsContainer .custom-option');
-    options.forEach(opt => {
-        const text = opt.innerText.toLowerCase();
-        opt.style.display = text.includes(query) ? 'flex' : 'none';
+    // Sync Employees
+    db.ref('employees').on('value', (snapshot) => {
+        const data = snapshot.val();
+        employees = data ? Object.values(data) : [];
+        nextEmpId = employees.length > 0 ? Math.max(...employees.map(e => e.id)) + 1 : 1;
+        refreshUI();
+    });
+
+    // Sync Logs
+    db.ref('repairedLogs').on('value', (snapshot) => {
+        const data = snapshot.val();
+        repairedLogs = data ? Object.values(data) : [];
+        refreshUI();
     });
 }
 
-function selectEmployee(value, display) {
-    document.getElementById('assetEmployee').value = value;
-    document.getElementById('selectedEmployeeDisplay').innerHTML = `${display} <i class="fas fa-chevron-down"></i>`;
-    document.getElementById('employeeDropdownList').classList.remove('show');
-    document.getElementById('selectedEmployeeDisplay').classList.remove('active');
-    populateEmployeeDropdown(value);
-}
-// ===============================
-
-function renderAssets() {
-    let search = document.getElementById("assetSearch")?.value.toLowerCase() || "";
-    let category = document.getElementById("categoryFilterAssets")?.value || "";
-    let statusFilter = document.getElementById("statusFilterAssets")?.value || "";
-    let filtered = assets.filter(a => (a.tag.toLowerCase().includes(search) || a.brand.toLowerCase().includes(search) || a.model.toLowerCase().includes(search)) && (category === "" || a.category === category) && (statusFilter === "" || a.status === statusFilter));
-    let tbody = document.getElementById("assetsTableBody");
-    if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-database"></i><p>No assets found</p></div></td></tr>`; return; }
-    tbody.innerHTML = filtered.map((a, i) => `<tr><td style="color:#94a3b8; font-family:mono;">${String(i+1).padStart(2,'0')}</td><td><strong>${a.tag}</strong></td><td>${a.category}</td><td>${a.brand}</td><td>${a.model}</td><td>${a.employee || "—"}</td><td>${getStatusBadge(a.status)}</td><td class="action-icons"><i class="fas fa-edit" onclick="editAsset(${a.id})"></i><i class="fas fa-trash-alt" onclick="deleteAsset(${a.id})"></i></td></tr>`).join('');
+// 5. UPDATE SAVE FUNCTIONS (Writes to Cloud instead of LocalStorage)
+function saveAssets() {
+    db.ref('assets').set(assets);
 }
 
-function renderEmployees() {
-    let search = document.getElementById("employeeSearch")?.value.toLowerCase() || "";
-    let dept = document.getElementById("deptFilter")?.value || "";
-    let filtered = employees.filter(e => (e.name.toLowerCase().includes(search) || e.empId.toLowerCase().includes(search)) && (dept === "" || e.department === dept));
-    let tbody = document.getElementById("employeesTableBody");
-    if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-users"></i><p>No employees found</p></div></td></tr>`; return; }
-    tbody.innerHTML = filtered.map((e, i) => { let assignedCount = assets.filter(a => a.employee === e.name && a.status === "Assigned").length; return `<tr><td style="color:#94a3b8; font-family:mono;">${String(i+1).padStart(2,'0')}</td><td><strong>${e.name}</strong></td><td class="badge badge-blue" style="background:#eef2ff;">${e.empId}</td><td>${e.designation}</td><td><span class="badge badge-purple">${e.department}</span></td><td>${assignedCount > 0 ? `<span class="badge badge-green">${assignedCount} asset(s)</span>` : "—"}</td><td class="action-icons"><i class="fas fa-edit" onclick="editEmployee(${e.id})"></i><i class="fas fa-trash-alt" onclick="deleteEmployee(${e.id})"></i></td></tr>` }).join('');
+function saveEmployees() {
+    db.ref('employees').set(employees);
 }
 
-function renderFaulty() {
-    let search = document.getElementById("faultySearch")?.value.toLowerCase() || "";
-    let faulty = assets.filter(a => a.status === "Faulty" && (a.tag.toLowerCase().includes(search) || a.brand.toLowerCase().includes(search)));
-    let tbody = document.getElementById("faultyTableBody");
-    if(faulty.length === 0) { tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-check-circle"></i><p>No faulty items</p></div></td></tr>`; return; }
-    tbody.innerHTML = faulty.map((a, i) => `<tr><td style="color:#94a3b8; font-family:mono;">${String(i+1).padStart(2,'0')}</td><td><strong>${a.tag}</strong></td><td>${a.category}</td><td>${a.brand}</td><td>${a.model}</td><td>${a.employee || "—"}</td><td><span class="badge badge-red">Needs Repair</span></td><td><button class="btn-outline" style="padding:4px 12px;" onclick="openRepairModal(${a.id})"><i class="fas fa-wrench"></i> Mark Repaired</button></td></tr>`).join('');
+function saveRepairedLogs() {
+    db.ref('repairedLogs').set(repairedLogs);
 }
 
-function renderRepairedLogs() {
-    let search = document.getElementById("repairedSearch")?.value.toLowerCase() || "";
-    let filtered = repairedLogs.filter(l => l.assetTag.toLowerCase().includes(search) || l.issueDesc.toLowerCase().includes(search) || l.technician.toLowerCase().includes(search));
-    let tbody = document.getElementById("repairedTableBody");
-    if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><i class="fas fa-clipboard-list"></i><p>No repair logs found</p></div></td></tr>`; return; }
-    tbody.innerHTML = filtered.map((log, i) => `<tr><td style="color:#94a3b8; font-family:mono;">${String(i+1).padStart(2,'0')}</td><td><strong>${log.assetTag}</strong></td><td>${log.category}</td><td>${log.brandModel}</td><td style="max-width:200px;">${log.issueDesc}</td><td style="max-width:200px;">${log.resolution}</td><td>${log.issueDate || "—"}</td><td>${log.repairedDate}</td><td><span class="badge badge-blue">${log.technician}</span></td></tr>`).join('');
+function refreshUI() {
+    updateCounters();
+    renderAssets();
+    renderEmployees();
+    renderFaulty();
+    renderRepairedLogs();
+    if (typeof renderChart === "function") renderChart();
 }
 
-function openRepairModal(assetId) {
-    let asset = assets.find(a => a.id === assetId);
-    if(asset) {
-        pendingRepairAsset = asset;
-        document.getElementById("repairAssetId").value = asset.id;
-        document.getElementById("repairIssueDesc").value = "";
-        document.getElementById("repairResolution").value = "";
-        document.getElementById("repairTechnician").value = "";
-        document.getElementById("repairDate").value = new Date().toISOString().slice(0,10);
-        document.getElementById("repairModal").classList.add("open");
-    }
-}
+// Initialize the sync on page load
+initRealtimeSync();
 
-function completeRepair() {
-    if(!pendingRepairAsset) return;
-    let issueDesc = document.getElementById("repairIssueDesc").value.trim();
-    let resolution = document.getElementById("repairResolution").value.trim();
-    let technician = document.getElementById("repairTechnician").value.trim();
-    let repairedDate = document.getElementById("repairDate").value;
-    if(!issueDesc || !resolution || !technician) { showToast("Please fill all repair details", true); return; }
-    
-    repairedLogs.push({ 
-        id: nextRepairId++, 
-        assetTag: pendingRepairAsset.tag, 
-        category: pendingRepairAsset.category, 
-        brandModel: `${pendingRepairAsset.brand} ${pendingRepairAsset.model}`, 
-        issueDesc: issueDesc, 
-        resolution: resolution, 
-        issueDate: new Date().toISOString().slice(0,10), 
-        repairedDate: repairedDate, 
-        technician: technician 
-    });
-    saveRepairedLogs();
-    
-    pendingRepairAsset.status = "In Stock";
-    pendingRepairAsset.employee = "";
-    saveAssets();
-    saveNextIds();
-    
-    closeRepairModal();
-    renderAssets(); renderFaulty(); renderRepairedLogs(); updateCounters(); renderChart();
-    showToast("Item repaired and logged successfully!");
-}
-
-function editAsset(id) { 
-    let a = assets.find(x => x.id === id); 
-    if(a) { 
-        editingAssetId = id; 
-        document.getElementById("assetModalTitle").innerText = "Edit Asset"; 
-        document.getElementById("assetId").value = a.id; 
-        document.getElementById("assetTag").value = a.tag; 
-        document.getElementById("assetCategory").value = a.category; 
-        document.getElementById("assetBrand").value = a.brand; 
-        document.getElementById("assetModel").value = a.model; 
-        document.getElementById("assetStatus").value = a.status; 
-
-        document.getElementById("assetEmployee").value = a.employee;
-        let empObj = employees.find(e => e.name === a.employee);
-        let displayText = empObj ? `${empObj.name} (${empObj.empId})` : (a.employee || "Select Employee...");
-        document.getElementById("selectedEmployeeDisplay").innerHTML = `${displayText} <i class="fas fa-chevron-down"></i>`;
-        
-        populateEmployeeDropdown(a.employee);
-        
-        document.getElementById("assetModal").classList.add("open"); 
-    } 
-}
-
-function deleteAsset(id) { 
-    if(confirm("Delete asset permanently?")) { 
-        assets = assets.filter(a => a.id !== id); 
-        saveAssets();
-        renderAssets(); renderFaulty(); updateCounters(); renderChart(); 
-        showToast("Asset deleted");
-    } 
-}
-
-function saveAsset() { 
-    let tag = document.getElementById("assetTag").value.trim(); 
-    let category = document.getElementById("assetCategory").value; 
-    let brand = document.getElementById("assetBrand").value.trim(); 
-    let model = document.getElementById("assetModel").value.trim(); 
-    let employee = document.getElementById("assetEmployee").value.trim(); 
-    let status = document.getElementById("assetStatus").value; 
-    
-    if(!tag || !brand || !model) { showToast("Required fields missing", true); return; } 
-    
-    if (status === "Assigned" && employee === "") {
-        showToast("You must select an employee to mark as Assigned.", true);
-        return;
-    }
-    
-    if (status !== "Assigned") {
-        employee = "";
-    }
-
-    if(editingAssetId) { 
-        let idx = assets.findIndex(a => a.id === editingAssetId); 
-        if(idx !== -1) assets[idx] = { ...assets[idx], tag, category, brand, model, employee, status }; 
-    } else { 
-        assets.push({ id: nextAssetId++, tag, category, brand, model, employee, status }); 
-    } 
-    saveAssets();
-    saveNextIds();
-    closeAssetModal(); 
-    renderAssets(); renderFaulty(); updateCounters(); renderChart(); 
-    showToast("Asset saved successfully!");
-}
-
-function editEmployee(id) { 
-    let e = employees.find(x => x.id === id); 
-    if(e) { 
-        editingEmployeeId = id; 
-        document.getElementById("employeeModalTitle").innerText = "Edit Employee"; 
-        document.getElementById("employeeId").value = e.id; 
-        document.getElementById("empName").value = e.name; 
-        document.getElementById("empId").value = e.empId; 
-        document.getElementById("empDesignation").value = e.designation; 
-        document.getElementById("empDept").value = e.department; 
-        document.getElementById("employeeModal").classList.add("open"); 
-    } 
-}
-
-function deleteEmployee(id) { 
-    if(confirm("Delete employee? Their assets will become unassigned.")) { 
-        let emp = employees.find(e => e.id === id); 
-        if(emp) assets.forEach(a => { 
-            if(a.employee === emp.name) {
-                a.employee = ""; 
-                a.status = "In Stock"; 
-            }
-        }); 
-        employees = employees.filter(e => e.id !== id); 
-        saveAssets();
-        saveEmployees();
-        renderEmployees(); renderAssets(); updateCounters(); renderChart();
-        showToast("Employee deleted");
-    } 
-}
-
-function saveEmployee() { 
-    let name = document.getElementById("empName").value.trim(); 
-    let empId = document.getElementById("empId").value.trim(); 
-    let desig = document.getElementById("empDesignation").value.trim(); 
-    let dept = document.getElementById("empDept").value; 
-    if(!name || !empId) { showToast("Name and Employee ID required", true); return; } 
-    if(editingEmployeeId) { 
-        let idx = employees.findIndex(e => e.id === editingEmployeeId); 
-        if(idx !== -1) {
-            let oldName = employees[idx].name;
-            if (oldName !== name) {
-                assets.forEach(a => { if (a.employee === oldName) a.employee = name; });
-                saveAssets();
-            }
-            employees[idx] = { ...employees[idx], name, empId, designation: desig, department: dept }; 
-        }
-    } else { 
-        employees.push({ id: nextEmpId++, name, empId, designation: desig, department: dept }); 
-    } 
-    saveEmployees();
-    saveNextIds();
-    closeEmployeeModal(); 
-    renderEmployees(); renderAssets(); updateCounters(); renderChart();
-    showToast("Employee saved successfully!");
-}
-
-function closeAssetModal() { document.getElementById("assetModal").classList.remove("open"); editingAssetId = null; }
-function closeEmployeeModal() { document.getElementById("employeeModal").classList.remove("open"); editingEmployeeId = null; }
-function closeRepairModal() { document.getElementById("repairModal").classList.remove("open"); pendingRepairAsset = null; }
-
-function renderChart() {
-    let categories = [...new Set(assets.map(a => a.category))];
-    let html = `<div>`;
-    categories.forEach(cat => { 
-        let count = assets.filter(a => a.category === cat).length; 
-        let pct = assets.length ? Math.round(count/assets.length*100) : 0; 
-        html += `<div class="bar-row">
-                    <div class="bar-meta"><span class="cat">${cat}</span><span class="cnt">${count} <span style="color:#94a3b8; font-size:0.7rem; margin-left:4px;">${pct}%</span></span></div>
-                    <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;"></div></div>
-                 </div>`; 
-    });
-    html += `</div>`; 
-    document.getElementById("categoryChart").innerHTML = html;
-    renderMetrics();
-}
-
-function renderMetrics() {
-    let totalAssets = assets.length;
-    let assignedAssets = assets.filter(a => a.status === "Assigned").length;
-    let faultyAssets = assets.filter(a => a.status === "Faulty").length;
-    let laptopsInStock = assets.filter(a => a.category === "Laptop" && a.status === "In Stock").length;
-    
-    let assignmentRate = totalAssets ? Math.round((assignedAssets / totalAssets) * 100) : 0;
-    let faultRate = totalAssets ? Math.round((faultyAssets / totalAssets) * 100) : 0;
-    
-    let unassignedEmployees = employees.filter(e => {
-        return assets.filter(a => a.employee === e.name && a.status === "Assigned").length === 0;
-    }).length;
-
-    let html = `
-        <div class="stat-row"><span class="s-label">Total Employees</span><span class="s-val">${employees.length}</span></div>
-        <div class="stat-row"><span class="s-label">Assignment Rate</span><span class="s-val" style="color:#4f46e5;">${assignmentRate}%</span></div>
-        <div class="stat-row"><span class="s-label">Available to Issue</span><span class="s-val" style="color:#10b981;">${assets.filter(a => a.status === "In Stock").length}</span></div>
-        <div class="stat-row"><span class="s-label">Fault Rate</span><span class="s-val" style="color:#ef4444;">${faultRate}%</span></div>
-        <div class="stat-row"><span class="s-label">Laptops In Stock</span><span class="s-val">${laptopsInStock}</span></div>
-        <div class="stat-row"><span class="s-label">Unassigned Employees</span><span class="s-val">${unassignedEmployees}</span></div>
-    `;
-    document.getElementById("systemMetrics").innerHTML = html;
-}
-
-function showPage(pageName) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-    document.getElementById(pageName + "Page").classList.add('active-page');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelector(`.nav-item[data-page="${pageName}"]`).classList.add('active');
-    let heading = { dashboard:"Dashboard", assets:"Assets", employees:"Employees", faulty:"Faulty Items", repaired:"Repaired Logs" };
-    document.getElementById("pageHeading").innerText = heading[pageName];
-    if(pageName === "dashboard") { updateCounters(); renderChart(); }
-    if(pageName === "assets") renderAssets();
-    if(pageName === "employees") renderEmployees();
-    if(pageName === "faulty") renderFaulty();
-    if(pageName === "repaired") renderRepairedLogs();
-}
-
-// Initialize
-loadData();
-
-// Event Listeners
-document.querySelectorAll('.nav-item').forEach(item => { item.addEventListener('click', () => showPage(item.getAttribute('data-page'))); });
-document.getElementById("addAssetBtn")?.addEventListener('click', () => { 
-    editingAssetId = null; 
-    document.getElementById("assetModalTitle").innerText = "Add Asset"; 
-    document.getElementById("assetId").value = ""; 
-    document.getElementById("assetTag").value = ""; 
-    document.getElementById("assetCategory").value = "Laptop"; 
-    document.getElementById("assetBrand").value = ""; 
-    document.getElementById("assetModel").value = ""; 
-    document.getElementById("assetStatus").value = "In Stock"; 
-    
-    document.getElementById("assetEmployee").value = "";
-    document.getElementById("selectedEmployeeDisplay").innerHTML = `Select Employee... <i class="fas fa-chevron-down"></i>`;
-    populateEmployeeDropdown("");
-    document.getElementById('employeeDropdownSearch').value = ""; 
-    filterEmployeeDropdown(); 
-
-    document.getElementById("assetModal").classList.add("open"); 
-});
-document.getElementById("addEmployeeBtn")?.addEventListener('click', () => { editingEmployeeId = null; document.getElementById("employeeModalTitle").innerText = "Add Employee"; document.getElementById("employeeId").value = ""; document.getElementById("empName").value = ""; document.getElementById("empId").value = ""; document.getElementById("empDesignation").value = ""; document.getElementById("empDept").value = "IT"; document.getElementById("employeeModal").classList.add("open"); });
-document.getElementById("saveAssetBtn")?.addEventListener('click', saveAsset);
-document.getElementById("saveEmployeeBtn")?.addEventListener('click', saveEmployee);
-document.getElementById("confirmRepairBtn")?.addEventListener('click', completeRepair);
-document.getElementById("assetSearch")?.addEventListener('input', renderAssets);
-document.getElementById("categoryFilterAssets")?.addEventListener('change', renderAssets);
-document.getElementById("statusFilterAssets")?.addEventListener('change', renderAssets);
-document.getElementById("employeeSearch")?.addEventListener('input', renderEmployees);
-document.getElementById("deptFilter")?.addEventListener('change', renderEmployees);
-document.getElementById("faultySearch")?.addEventListener('input', renderFaulty);
-document.getElementById("repairedSearch")?.addEventListener('input', renderRepairedLogs);
-document.getElementById("exportLogsBtn")?.addEventListener('click', () => { let csv = "Asset Tag,Category,Brand/Model,Issue,Resolution,Issue Date,Repaired Date,Technician\n" + repairedLogs.map(l => `${l.assetTag},${l.category},${l.brandModel},${l.issueDesc},${l.resolution},${l.issueDate},${l.repairedDate},${l.technician}`).join("\n"); let blob = new Blob([csv], {type:"text/csv"}); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "repaired_logs.csv"; a.click(); URL.revokeObjectURL(a.href); showToast("Logs exported successfully!"); });
-document.getElementById("menuToggle")?.addEventListener('click', () => document.getElementById("sidebar").classList.toggle("open"));
-document.getElementById("currentDate").innerText = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-renderAssets(); renderEmployees(); renderFaulty(); renderRepairedLogs(); updateCounters(); renderChart();
+// ... Keep all your existing UI rendering functions (renderAssets, etc.) below this ...
 </script>
 </body>
 </html>
