@@ -127,6 +127,10 @@ body {
     font-size: 1.2rem;
     font-weight: 800;
     color: #ffffff;
+    -webkit-text-fill-color: white;
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
 }
 
 .logo-text p {
@@ -992,8 +996,8 @@ tr:hover td {
     color: #475569;
 }
 
-/* Category Management Chip */
-.category-manager-chip {
+/* Category & Department Management Chips */
+.manager-chip {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -1008,11 +1012,11 @@ tr:hover td {
     transition: all 0.2s;
     border: 1px solid #bfdbfe;
 }
-.category-manager-chip:hover {
+.manager-chip:hover {
     background: #dbeafe;
     border-color: #93c5fd;
 }
-.category-item-list {
+.item-list {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
@@ -1020,7 +1024,7 @@ tr:hover td {
     max-height: 280px;
     overflow-y: auto;
 }
-.category-badge-manager {
+.badge-manager {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 40px;
@@ -1030,67 +1034,15 @@ tr:hover td {
     gap: 12px;
     font-size: 0.85rem;
 }
-.category-badge-manager i {
+.badge-manager i {
     cursor: pointer;
     color: #94a3b8;
     transition: color 0.2s;
 }
-.category-badge-manager i:hover {
+.badge-manager i:hover {
     color: #dc2626;
 }
-.add-cat-input-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 8px;
-}
-
-/* Department Management Styles */
-.dept-manager-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #eff6ff;
-    border-radius: 40px;
-    padding: 6px 16px 6px 12px;
-    margin-left: 12px;
-    cursor: pointer;
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: #3b82f6;
-    transition: all 0.2s;
-    border: 1px solid #bfdbfe;
-}
-.dept-manager-chip:hover {
-    background: #dbeafe;
-    border-color: #93c5fd;
-}
-.dept-item-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 16px;
-    max-height: 280px;
-    overflow-y: auto;
-}
-.dept-badge-manager {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 40px;
-    padding: 6px 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.85rem;
-}
-.dept-badge-manager i {
-    cursor: pointer;
-    color: #94a3b8;
-    transition: color 0.2s;
-}
-.dept-badge-manager i:hover {
-    color: #dc2626;
-}
-.add-dept-input-group {
+.add-input-group {
     display: flex;
     gap: 10px;
     margin-top: 8px;
@@ -1186,14 +1138,14 @@ tr:hover td {
             <!-- Assets Page -->
             <div id="assetsPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-list"></i> All Assets</div><button class="btn-primary" id="addAssetBtn"><i class="fas fa-plus"></i> Add Asset</button></div>
-                <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="assetSearch" placeholder="Search..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="categoryFilterAssets"><option value="">All Categories</option></select><div class="category-manager-chip" id="manageCategoriesBtn"><i class="fas fa-edit"></i> Manage</div></div><select class="filter-select" id="statusFilterAssets"><option value="">All Status</option><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div>
+                <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="assetSearch" placeholder="Search..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="categoryFilterAssets"><option value="">All Categories</option></select><div class="manager-chip" id="manageCategoriesBtn"><i class="fas fa-edit"></i> Manage</div></div><select class="filter-select" id="statusFilterAssets"><option value="">All Status</option><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div>
                 <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Status</th><th>Actions</th></tr></thead><tbody id="assetsTableBody"></tbody></table></div></div>
             </div>
 
-            <!-- Employees Page -->
+            <!-- Employees Page with Department Management -->
             <div id="employeesPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-id-badge"></i> Employees</div><button class="btn-primary" id="addEmployeeBtn"><i class="fas fa-user-plus"></i> Add Employee</button></div>
-                <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="employeeSearch" placeholder="Search..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="deptFilter"><option value="">All Departments</option></select><div class="dept-manager-chip" id="manageDepartmentsBtn"><i class="fas fa-edit"></i> Manage</div></div></div></div>
+                <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="employeeSearch" placeholder="Search..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="deptFilter"><option value="">All Departments</option></select><div class="manager-chip" id="manageDeptsBtn"><i class="fas fa-building"></i> Manage</div></div></div></div>
                 <div class="table-wrapper"><table><thead><tr><th>#</th><th>Name</th><th>Employee ID</th><th>Designation</th><th>Department</th><th>Assets</th><th>Actions</th></tr></thead><tbody id="employeesTableBody"></tbody></table></div></div>
             </div>
 
@@ -1201,7 +1153,7 @@ tr:hover td {
             <div id="faultyPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-tools"></i> Faulty Equipment</div></div>
                 <div style="padding: 0 20px 16px 20px;"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="faultySearch" placeholder="Search faulty items..."></div></div>
-                <div class="table-wrapper"></table><thead><tr><th>#</th><th>Asset Tag</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Issue Reported</th><th>Actions</th></tr></thead><tbody id="faultyTableBody"></tbody></table></div></div>
+                <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Issue Reported</th><th>Actions</th></tr></thead><tbody id="faultyTableBody"></tbody></table></div></div>
             </div>
 
             <!-- Repaired Page -->
@@ -1219,36 +1171,35 @@ tr:hover td {
     <div class="modal">
         <div class="modal-header"><h3>Manage Categories</h3><button class="close-modal" onclick="closeCategoryModal()">×</button></div>
         <div class="modal-body">
-            <div class="form-group"><label>Add New Category</label><div class="add-cat-input-group"><input type="text" id="newCategoryName" placeholder="e.g., Smartphone, Webcam"><button class="btn-primary" id="addCategoryBtn" style="padding: 10px 20px;"><i class="fas fa-plus"></i> Add</button></div></div>
-            <div class="form-group"><label>Current Categories</label><div id="categoryListContainer" class="category-item-list"></div></div>
+            <div class="form-group"><label>Add New Category</label><div class="add-input-group"><input type="text" id="newCategoryName" placeholder="e.g., Smartphone, Webcam"><button class="btn-primary" id="addCategoryBtn" style="padding: 10px 20px;"><i class="fas fa-plus"></i> Add</button></div></div>
+            <div class="form-group"><label>Current Categories</label><div id="categoryListContainer" class="item-list"></div></div>
         </div>
         <div class="modal-footer"><button class="btn-secondary" onclick="closeCategoryModal()">Close</button></div>
     </div>
 </div>
 
-<!-- Department Management Modal -->
+<!-- Department Management Modal (New) -->
 <div id="departmentModal" class="modal-overlay">
     <div class="modal">
         <div class="modal-header"><h3>Manage Departments</h3><button class="close-modal" onclick="closeDepartmentModal()">×</button></div>
         <div class="modal-body">
-            <div class="form-group"><label>Add New Department</label><div class="add-dept-input-group"><input type="text" id="newDepartmentName" placeholder="e.g., Legal, R&D"><button class="btn-primary" id="addDepartmentBtn" style="padding: 10px 20px;"><i class="fas fa-plus"></i> Add</button></div></div>
-            <div class="form-group"><label>Current Departments</label><div id="departmentListContainer" class="dept-item-list"></div></div>
+            <div class="form-group"><label>Add New Department</label><div class="add-input-group"><input type="text" id="newDeptName" placeholder="e.g., Logistics, R&D"><button class="btn-primary" id="addDeptBtn"><i class="fas fa-plus"></i> Add</button></div></div>
+            <div class="form-group"><label>Current Departments</label><div id="deptListContainer" class="item-list"></div></div>
+            <div class="form-group"><small style="color:#ef4444;">Note: Deleting a department will reset affected employees to "IT".</small></div>
         </div>
         <div class="modal-footer"><button class="btn-secondary" onclick="closeDepartmentModal()">Close</button></div>
     </div>
 </div>
 
-<!-- Asset Modal -->
-<div id="assetModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="assetModalTitle">Add Asset</h3><button class="close-modal" onclick="closeAssetModal()">×</button></div><div class="modal-body"><input type="hidden" id="assetId"><div class="form-group"><label>Asset Tag</label><input id="assetTag"></div><div class="form-group"><label>Category</label><select id="assetCategory"></select></div><div class="form-group"><label>Brand</label><input id="assetBrand"></div><div class="form-group"><label>Model</label><input id="assetModel"></div><div class="form-group"><label>Employee (optional)</label><div class="custom-select-container"><div class="custom-select-header" id="selectedEmployeeDisplay" onclick="toggleEmployeeDropdown()">Select Employee... <i class="fas fa-chevron-down"></i></div><div class="custom-select-dropdown" id="employeeDropdownList"><div class="custom-select-search"><input type="text" id="employeeDropdownSearch" placeholder="Search by name or ID..." oninput="filterEmployeeDropdown()"></div><div class="custom-select-options" id="employeeOptionsContainer"></div></div></div><input type="hidden" id="assetEmployee"></div><div class="form-group"><label>Status</label><select id="assetStatus"><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeAssetModal()">Cancel</button><button class="btn-primary" id="saveAssetBtn">Save</button></div></div></div>
+<!-- Asset Modal, Employee Modal, Repair Modal (same as before, employee modal uses departments list) -->
+<div id="assetModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="assetModalTitle">Add Asset</h3><button class="close-modal" onclick="closeAssetModal()">×</button></div><div class="modal-body"><input type="hidden" id="assetId"><div class="form-group"><label>Asset Tag</label><input id="assetTag"></div><div class="form-group"><label>Category</label><select id="assetCategory"></select></div><div class="form-group"><label>Brand</label><input id="assetBrand"></div><div class="form-group"><label>Model</label><input id="assetModel"></div><div class="form-group"><label>Employee (optional)</label><div class="custom-select-container"><div class="custom-select-header" id="selectedEmployeeDisplay" onclick="toggleEmployeeDropdown()">Select Employee... <i class="fas fa-chevron-down"></i></div><div class="custom-select-dropdown" id="employeeDropdownList"><div class="custom-select-search"><input type="text" id="employeeDropdownSearch" placeholder="Search..." oninput="filterEmployeeDropdown()"></div><div class="custom-select-options" id="employeeOptionsContainer"></div></div></div><input type="hidden" id="assetEmployee"></div><div class="form-group"><label>Status</label><select id="assetStatus"><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeAssetModal()">Cancel</button><button class="btn-primary" id="saveAssetBtn">Save</button></div></div></div>
 
-<!-- Employee Modal -->
 <div id="employeeModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="employeeModalTitle">Add Employee</h3><button class="close-modal" onclick="closeEmployeeModal()">×</button></div><div class="modal-body"><input type="hidden" id="employeeId"><div class="form-group"><label>Full Name</label><input id="empName"></div><div class="form-group"><label>Employee ID</label><input id="empId"></div><div class="form-group"><label>Designation</label><input id="empDesignation"></div><div class="form-group"><label>Department</label><select id="empDept"></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeEmployeeModal()">Cancel</button><button class="btn-primary" id="saveEmployeeBtn">Save</button></div></div></div>
 
-<!-- Repair Modal -->
 <div id="repairModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3>Mark as Repaired</h3><button class="close-modal" onclick="closeRepairModal()">×</button></div><div class="modal-body"><input type="hidden" id="repairAssetId"><div class="form-group"><label>Issue Description</label><textarea id="repairIssueDesc" placeholder="Describe the issue..."></textarea></div><div class="form-group"><label>Resolution / Fix Applied</label><textarea id="repairResolution" placeholder="What was done to fix it..."></textarea></div><div class="form-group"><label>Technician Name</label><input id="repairTechnician" placeholder="Who performed the repair"></div><div class="form-group"><label>Repaired Date</label><input type="date" id="repairDate"></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeRepairModal()">Cancel</button><button class="btn-primary" id="confirmRepairBtn">Complete Repair</button></div></div></div>
 
 <script>
-// FIREBASE CONFIGURATION
+// FIREBASE CONFIGURATION (unchanged)
 const firebaseConfig = {
     apiKey: "AIzaSyAtHQpvQfF8LPB_1RWUkP78H2a5Uxf7y_Y",
     authDomain: "td-inventory-26899.firebaseapp.com",
@@ -1266,92 +1217,35 @@ let departments = ["IT", "Engineering", "Sales", "HR", "Finance", "Marketing", "
 
 function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast'; t.style.background = isErr ? '#dc2626' : '#10b981'; t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
 
-// Categories sync
+// --- Categories Logic (unchanged but functions renamed for clarity) ---
 async function syncCategories() { await db.ref('appConfig/categories').set(categories); }
-function loadCategoriesFromFirebase() { db.ref('appConfig/categories').on('value', snap => { if(snap.exists()) categories = snap.val(); else syncCategories(); refreshCategorySelectors(); if(document.getElementById("categoryListContainer")) renderCategoryManager(); }); }
-
-// Departments sync
-async function syncDepartments() { await db.ref('appConfig/departments').set(departments); }
-function loadDepartmentsFromFirebase() { db.ref('appConfig/departments').on('value', snap => { if(snap.exists()) departments = snap.val(); else syncDepartments(); refreshDepartmentSelectors(); if(document.getElementById("departmentListContainer")) renderDepartmentManager(); }); }
-
+function loadCategoriesFromFirebase() { db.ref('appConfig/categories').on('value', snap => { if(snap.exists()) categories = snap.val(); else syncCategories(); refreshCategorySelectors(); renderCategoryManager(); }); }
 function refreshCategorySelectors() {
     const select = document.getElementById("categoryFilterAssets");
     if(select) { const currentVal = select.value; select.innerHTML = `<option value="">All Categories</option>` + categories.map(c => `<option value="${c}">${c}</option>`).join(''); if(currentVal && categories.includes(currentVal)) select.value = currentVal; else select.value = ""; }
     const assetCatSelect = document.getElementById("assetCategory");
     if(assetCatSelect) { const old = assetCatSelect.value; assetCatSelect.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join(''); if(old && categories.includes(old)) assetCatSelect.value = old; else assetCatSelect.value = categories[0] || "Laptop"; }
 }
+function renderCategoryManager() { const container = document.getElementById("categoryListContainer"); if(!container) return; if(categories.length === 0) { container.innerHTML = '<div class="empty-state" style="padding:20px;">No categories.</div>'; return; } container.innerHTML = categories.map(cat => `<div class="badge-manager"><span>${cat}</span><i class="fas fa-trash-alt" onclick="deleteCategory('${cat.replace(/'/g, "\\'")}')"></i></div>`).join(''); }
+window.deleteCategory = function(catName) { if(assets.some(a => a.category === catName)) { showToast(`Cannot delete "${catName}": assets using it.`, true); return; } categories = categories.filter(c => c !== catName); syncCategories(); refreshCategorySelectors(); renderCategoryManager(); showToast(`Category "${catName}" deleted.`); };
+function addNewCategory() { const input = document.getElementById("newCategoryName"); const newCat = input.value.trim(); if(!newCat) { showToast("Enter category name", true); return; } if(categories.includes(newCat)) { showToast("Category exists", true); return; } categories.push(newCat); syncCategories(); refreshCategorySelectors(); renderCategoryManager(); input.value = ""; showToast(`Category "${newCat}" added.`); }
 
+// --- Departments Logic (new) ---
+async function syncDepartments() { await db.ref('appConfig/departments').set(departments); }
+function loadDepartmentsFromFirebase() { db.ref('appConfig/departments').on('value', snap => { if(snap.exists()) departments = snap.val(); else syncDepartments(); refreshDepartmentSelectors(); renderDepartmentManager(); }); }
 function refreshDepartmentSelectors() {
     const deptFilter = document.getElementById("deptFilter");
     if(deptFilter) { const currentVal = deptFilter.value; deptFilter.innerHTML = `<option value="">All Departments</option>` + departments.map(d => `<option value="${d}">${d}</option>`).join(''); if(currentVal && departments.includes(currentVal)) deptFilter.value = currentVal; else deptFilter.value = ""; }
     const empDeptSelect = document.getElementById("empDept");
     if(empDeptSelect) { const old = empDeptSelect.value; empDeptSelect.innerHTML = departments.map(d => `<option value="${d}">${d}</option>`).join(''); if(old && departments.includes(old)) empDeptSelect.value = old; else empDeptSelect.value = departments[0] || "IT"; }
 }
-
-function renderCategoryManager() {
-    const container = document.getElementById("categoryListContainer");
-    if(!container) return;
-    if(categories.length === 0) { container.innerHTML = '<div class="empty-state" style="padding:20px;">No categories. Add one above.</div>'; return; }
-    container.innerHTML = categories.map(cat => `<div class="category-badge-manager"><span>${cat}</span><i class="fas fa-trash-alt" onclick="deleteCategory('${cat.replace(/'/g, "\\'")}')" style="cursor:pointer;"></i></div>`).join('');
-}
-
-function renderDepartmentManager() {
-    const container = document.getElementById("departmentListContainer");
-    if(!container) return;
-    if(departments.length === 0) { container.innerHTML = '<div class="empty-state" style="padding:20px;">No departments. Add one above.</div>'; return; }
-    container.innerHTML = departments.map(dept => `<div class="dept-badge-manager"><span>${dept}</span><i class="fas fa-trash-alt" onclick="deleteDepartment('${dept.replace(/'/g, "\\'")}')" style="cursor:pointer;"></i></div>`).join('');
-}
-
-window.deleteCategory = function(catName) {
-    if(assets.some(a => a.category === catName)) { showToast(`Cannot delete "${catName}": assets are using this category.`, true); return; }
-    categories = categories.filter(c => c !== catName);
-    syncCategories();
-    refreshCategorySelectors();
-    renderCategoryManager();
-    showToast(`Category "${catName}" deleted.`);
-};
-
-window.deleteDepartment = function(deptName) {
-    if(employees.some(e => e.department === deptName)) { showToast(`Cannot delete "${deptName}": employees are assigned to this department.`, true); return; }
-    departments = departments.filter(d => d !== deptName);
-    syncDepartments();
-    refreshDepartmentSelectors();
-    renderDepartmentManager();
-    showToast(`Department "${deptName}" deleted.`);
-};
-
-function addNewCategory() {
-    const input = document.getElementById("newCategoryName");
-    const newCat = input.value.trim();
-    if(!newCat) { showToast("Please enter category name", true); return; }
-    if(categories.includes(newCat)) { showToast("Category already exists", true); return; }
-    categories.push(newCat);
-    syncCategories();
-    refreshCategorySelectors();
-    renderCategoryManager();
-    input.value = "";
-    showToast(`Category "${newCat}" added.`);
-}
-
-function addNewDepartment() {
-    const input = document.getElementById("newDepartmentName");
-    const newDept = input.value.trim();
-    if(!newDept) { showToast("Please enter department name", true); return; }
-    if(departments.includes(newDept)) { showToast("Department already exists", true); return; }
-    departments.push(newDept);
-    syncDepartments();
-    refreshDepartmentSelectors();
-    renderDepartmentManager();
-    input.value = "";
-    showToast(`Department "${newDept}" added.`);
-}
-
-function openCategoryModal() { document.getElementById("categoryModal").classList.add("open"); }
-function closeCategoryModal() { document.getElementById("categoryModal").classList.remove("open"); }
-function openDepartmentModal() { document.getElementById("departmentModal").classList.add("open"); }
+function renderDepartmentManager() { const container = document.getElementById("deptListContainer"); if(!container) return; if(departments.length === 0) { container.innerHTML = '<div class="empty-state" style="padding:20px;">No departments.</div>'; return; } container.innerHTML = departments.map(dept => `<div class="badge-manager"><span>${dept}</span><i class="fas fa-trash-alt" onclick="deleteDepartment('${dept.replace(/'/g, "\\'")}')"></i></div>`).join(''); }
+window.deleteDepartment = function(deptName) { if(employees.some(e => e.department === deptName)) { if(confirm(`Department "${deptName}" has employees. They will be moved to IT. Continue?`)) { employees.forEach(e => { if(e.department === deptName) e.department = "IT"; }); syncEmployeesToFirebase(); } else return; } departments = departments.filter(d => d !== deptName); syncDepartments(); refreshDepartmentSelectors(); renderDepartmentManager(); showToast(`Department "${deptName}" deleted.`); };
+function addNewDepartment() { const input = document.getElementById("newDeptName"); const newDept = input.value.trim(); if(!newDept) { showToast("Enter department name", true); return; } if(departments.includes(newDept)) { showToast("Department exists", true); return; } departments.push(newDept); syncDepartments(); refreshDepartmentSelectors(); renderDepartmentManager(); input.value = ""; showToast(`Department "${newDept}" added.`); }
+function openDepartmentModal() { document.getElementById("departmentModal").classList.add("open"); renderDepartmentManager(); }
 function closeDepartmentModal() { document.getElementById("departmentModal").classList.remove("open"); }
 
-// Authentication & Data Sync
+// --- Authentication & Data Sync (unchanged logic) ---
 function checkAuth() { if(sessionStorage.getItem('it_inventory_auth') === 'true') { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('mainApp').style.display = 'flex'; } }
 function attemptLogin(e) { e.preventDefault(); const u = document.getElementById('loginUser').value, p = document.getElementById('loginPass').value; if(u === 'admin' && p === 'admin') { sessionStorage.setItem('it_inventory_auth','true'); document.getElementById('loginScreen').style.display='none'; document.getElementById('mainApp').style.display='flex'; showToast("Logged in!"); } else { document.getElementById('loginError').style.display='block'; } }
 function logout() { sessionStorage.removeItem('it_inventory_auth'); location.reload(); }
@@ -1390,23 +1284,12 @@ function updateCounters() {
 function getStatusBadge(s) { if(s==="Assigned") return `<span class="badge badge-green"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Assigned</span>`; if(s==="In Stock") return `<span class="badge badge-yellow"><i class="fas fa-circle" style="font-size:0.5rem;"></i> In Stock</span>`; return `<span class="badge badge-red"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Faulty</span>`; }
 
 function renderAssets() { let s = document.getElementById("assetSearch")?.value.toLowerCase()||"", cat = document.getElementById("categoryFilterAssets")?.value||"", stat = document.getElementById("statusFilterAssets")?.value||""; let f = assets.filter(a=> (a.tag.toLowerCase().includes(s)||a.brand.toLowerCase().includes(s)) && (cat===""||a.category===cat) && (stat===""||a.status===stat)); let tbody = document.getElementById("assetsTableBody"); if(!tbody) return; if(f.length===0) { tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><i class="fas fa-database"></i><p>No assets</p></div></td></tr>`; return; } tbody.innerHTML = f.map((a,i)=>`<tr><td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td><td><strong>${a.tag}</strong></td><td>${a.category}</td><td>${a.brand}</td><td>${a.model}</td><td>${a.employee||"—"}</td><td>${getStatusBadge(a.status)}</td><td class="action-icons"><i class="fas fa-edit" onclick="editAsset(${a.id})"></i><i class="fas fa-trash-alt" onclick="deleteAsset(${a.id})"></i></td></tr>`).join(''); }
-function renderEmployees() { let s = document.getElementById("employeeSearch")?.value.toLowerCase()||"", d = document.getElementById("deptFilter")?.value||""; let f = employees.filter(e=> (e.name.toLowerCase().includes(s)||e.empId.toLowerCase().includes(s)) && (d===""||e.department===d)); let tb = document.getElementById("employeesTableBody"); if(!tb) return; if(f.length===0) { tb.innerHTML=`<tr><td colspan="7"><div class="empty-state"><i class="fas fa-users"></i><p>No employees</p></div></tr>`; return; } tb.innerHTML = f.map((e,i)=> { let cnt = assets.filter(a=>a.employee===e.name && a.status==="Assigned").length; return `<tr><td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td><td><strong>${e.name}</strong></td><td class="badge badge-blue">${e.empId}</td><td>${e.designation}</td><td><span class="badge badge-purple">${e.department}</span></td><td>${cnt>0?`<span class="badge badge-green">${cnt} asset(s)</span>`:"—"}</td><td class="action-icons"><i class="fas fa-edit" onclick="editEmployee(${e.id})"></i><i class="fas fa-trash-alt" onclick="deleteEmployee(${e.id})"></i></td></tr>`; }).join(''); }
+function renderEmployees() { let s = document.getElementById("employeeSearch")?.value.toLowerCase()||"", d = document.getElementById("deptFilter")?.value||""; let f = employees.filter(e=> (e.name.toLowerCase().includes(s)||e.empId.toLowerCase().includes(s)) && (d===""||e.department===d)); let tb = document.getElementById("employeesTableBody"); if(!tb) return; if(f.length===0) { tb.innerHTML=`<tr><td colspan="7"><div class="empty-state"><i class="fas fa-users"></i><p>No employees</p></div></td></tr>`; return; } tb.innerHTML = f.map((e,i)=> { let cnt = assets.filter(a=>a.employee===e.name && a.status==="Assigned").length; return `<tr><td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td><td><strong>${e.name}</strong></td><td class="badge badge-blue">${e.empId}</td><td>${e.designation}</td><td><span class="badge badge-purple">${e.department}</span></td><td>${cnt>0?`<span class="badge badge-green">${cnt} asset(s)</span>`:"—"}</td><td class="action-icons"><i class="fas fa-edit" onclick="editEmployee(${e.id})"></i><i class="fas fa-trash-alt" onclick="deleteEmployee(${e.id})"></i></td></tr>`; }).join(''); }
 function renderFaulty() { let s = document.getElementById("faultySearch")?.value.toLowerCase()||""; let f = assets.filter(a=>a.status==="Faulty" && (a.tag.toLowerCase().includes(s)||a.brand.toLowerCase().includes(s))); let tb = document.getElementById("faultyTableBody"); if(!tb) return; if(f.length===0) { tb.innerHTML=`<tr><td colspan="8"><div class="empty-state"><i class="fas fa-check-circle"></i><p>No faulty items</p></div></td></tr>`; return; } tb.innerHTML = f.map((a,i)=>`<tr><td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td><td><strong>${a.tag}</strong></td><td>${a.category}</td><td>${a.brand}</td><td>${a.model}</td><td>${a.employee||"—"}</td><td><span class="badge badge-red">Needs Repair</span></td><td><button class="btn-outline" onclick="openRepairModal(${a.id})"><i class="fas fa-wrench"></i> Mark Repaired</button></td></tr>`).join(''); }
 function renderRepairedLogs() { let s = document.getElementById("repairedSearch")?.value.toLowerCase()||""; let f = repairedLogs.filter(l=>l.assetTag.toLowerCase().includes(s)||l.issueDesc.toLowerCase().includes(s)); let tb = document.getElementById("repairedTableBody"); if(!tb) return; if(f.length===0) { tb.innerHTML=`<tr><td colspan="9"><div class="empty-state"><i class="fas fa-clipboard-list"></i><p>No logs</p></div></td></tr>`; return; } tb.innerHTML = f.map((l,i)=>`<tr><td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td><td><strong>${l.assetTag}</strong></td><td>${l.category}</td><td>${l.brandModel}</td><td>${l.issueDesc}</td><td>${l.resolution}</td><td>${l.issueDate||"—"}</td><td>${l.repairedDate}</td><td><span class="badge badge-blue">${l.technician}</span></td></tr>`).join(''); }
 function renderChart() { 
-    let html = `<div>`; 
-    categories.forEach(cat => { 
-        let cnt = assets.filter(a=>a.category===cat).length; 
-        let pct = assets.length?Math.round(cnt/assets.length*100):0; 
-        html += `<div class="bar-row"><div class="bar-meta"><span class="cat">${cat}</span><span class="cnt">${cnt} <span style="color:#94a3b8;">${pct}%</span></span></div><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;"></div></div></div>`; 
-    }); 
-    html+=`</div>`; 
-    if(document.getElementById("categoryChart")) document.getElementById("categoryChart").innerHTML = html; 
-    let assignedAssets = assets.filter(a=>a.status==="Assigned").length; 
-    let faultRate = assets.length?Math.round(assets.filter(a=>a.status==="Faulty").length/assets.length*100):0; 
-    let unassignedEmps = employees.filter(e=>assets.filter(a=>a.employee===e.name && a.status==="Assigned").length===0).length; 
-    let metricsHtml = `<div class="stat-row"><span class="s-label">Total Employees</span><span class="s-val">${employees.length}</span></div><div class="stat-row"><span class="s-label">Assignment Rate</span><span class="s-val" style="color:#4f46e5;">${assets.length?Math.round(assignedAssets/assets.length*100):0}%</span></div><div class="stat-row"><span class="s-label">Available to Issue</span><span class="s-val" style="color:#10b981;">${assets.filter(a=>a.status==="In Stock").length}</span></div><div class="stat-row"><span class="s-label">Fault Rate</span><span class="s-val" style="color:#ef4444;">${faultRate}%</span></div><div class="stat-row"><span class="s-label">Unassigned Employees</span><span class="s-val">${unassignedEmps}</span></div>`; 
-    if(document.getElementById("systemMetrics")) document.getElementById("systemMetrics").innerHTML = metricsHtml; 
+    let html = `<div>`; categories.forEach(cat => { let cnt = assets.filter(a=>a.category===cat).length; let pct = assets.length?Math.round(cnt/assets.length*100):0; html += `<div class="bar-row"><div class="bar-meta"><span class="cat">${cat}</span><span class="cnt">${cnt} <span style="color:#94a3b8;">${pct}%</span></span></div><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;"></div></div></div>`; }); html+=`</div>`; if(document.getElementById("categoryChart")) document.getElementById("categoryChart").innerHTML = html; 
+    let assignedAssets = assets.filter(a=>a.status==="Assigned").length; let faultRate = assets.length?Math.round(assets.filter(a=>a.status==="Faulty").length/assets.length*100):0; let unassignedEmps = employees.filter(e=>assets.filter(a=>a.employee===e.name && a.status==="Assigned").length===0).length; let metricsHtml = `<div class="stat-row"><span class="s-label">Total Employees</span><span class="s-val">${employees.length}</span></div><div class="stat-row"><span class="s-label">Assignment Rate</span><span class="s-val" style="color:#4f46e5;">${assets.length?Math.round(assignedAssets/assets.length*100):0}%</span></div><div class="stat-row"><span class="s-label">Available to Issue</span><span class="s-val" style="color:#10b981;">${assets.filter(a=>a.status==="In Stock").length}</span></div><div class="stat-row"><span class="s-label">Fault Rate</span><span class="s-val" style="color:#ef4444;">${faultRate}%</span></div><div class="stat-row"><span class="s-label">Unassigned Employees</span><span class="s-val">${unassignedEmps}</span></div>`; if(document.getElementById("systemMetrics")) document.getElementById("systemMetrics").innerHTML = metricsHtml; 
 }
 function renderAllPages() { renderAssets(); renderEmployees(); renderFaulty(); renderRepairedLogs(); updateCounters(); renderChart(); }
 
@@ -1421,70 +1304,21 @@ function completeRepair() { if(!pendingRepairAsset) return; let issue=document.g
 function closeAssetModal() { document.getElementById("assetModal").classList.remove("open"); editingAssetId=null; }
 function closeEmployeeModal() { document.getElementById("employeeModal").classList.remove("open"); editingEmployeeId=null; }
 function closeRepairModal() { document.getElementById("repairModal").classList.remove("open"); pendingRepairAsset=null; }
-
 function showPage(p) { document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active-page')); document.getElementById(p+"Page").classList.add('active-page'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); document.querySelector(`.nav-item[data-page="${p}"]`).classList.add('active'); let heading={dashboard:"Dashboard",assets:"Assets",employees:"Employees",faulty:"Faulty Items",repaired:"Repaired Logs"}; document.getElementById("pageHeading").innerText=heading[p]; if(p==="dashboard") { updateCounters(); renderChart(); } if(p==="assets") renderAssets(); if(p==="employees") renderEmployees(); if(p==="faulty") renderFaulty(); if(p==="repaired") renderRepairedLogs(); }
 
-// Employee dropdown functions
-function populateEmployeeDropdown(selected="") { 
-    let container = document.getElementById("employeeOptionsContainer"); 
-    if(!container) return; 
-    let html = `<div class="custom-option ${selected===''?'selected':''}" onclick="selectEmployee('','Select Employee...')"><em>None (In Stock / Faulty)</em></div>`; 
-    employees.forEach(emp=>{ 
-        let isSel = selected===emp.name; 
-        html += `<div class="custom-option ${isSel?'selected':''}" onclick="selectEmployee('${emp.name}','${emp.name} (${emp.empId})')"><span>${emp.name}</span><span class="emp-id">${emp.empId}</span></div>`; 
-    }); 
-    container.innerHTML = html; 
-}
-function selectEmployee(val,disp) { 
-    document.getElementById("assetEmployee").value=val; 
-    document.getElementById("selectedEmployeeDisplay").innerHTML=`${disp} <i class="fas fa-chevron-down"></i>`; 
-    document.getElementById("employeeDropdownList").classList.remove("show"); 
-    document.getElementById("selectedEmployeeDisplay").classList.remove("active"); 
-    populateEmployeeDropdown(val); 
-}
-function toggleEmployeeDropdown() { 
-    document.getElementById("employeeDropdownList").classList.toggle("show"); 
-    document.getElementById("selectedEmployeeDisplay").classList.toggle("active"); 
-    if(document.getElementById("employeeDropdownList").classList.contains("show")) document.getElementById("employeeDropdownSearch")?.focus(); 
-}
-function filterEmployeeDropdown() { 
-    let q = document.getElementById("employeeDropdownSearch")?.value.toLowerCase()||""; 
-    document.querySelectorAll("#employeeOptionsContainer .custom-option").forEach(opt=>{ 
-        opt.style.display = opt.innerText.toLowerCase().includes(q) ? "flex" : "none"; 
-    }); 
-}
+function populateEmployeeDropdown(selected="") { let container = document.getElementById("employeeOptionsContainer"); if(!container) return; let html = `<div class="custom-option ${selected===''?'selected':''}" onclick="selectEmployee('','Select Employee...')"><em>None (In Stock / Faulty)</em></div>`; employees.forEach(emp=>{ let isSel = selected===emp.name; html += `<div class="custom-option ${isSel?'selected':''}" onclick="selectEmployee('${emp.name}','${emp.name} (${emp.empId})')"><span>${emp.name}</span><span class="emp-id">${emp.empId}</span></div>`; }); container.innerHTML = html; }
+function selectEmployee(val,disp) { document.getElementById("assetEmployee").value=val; document.getElementById("selectedEmployeeDisplay").innerHTML=`${disp} <i class="fas fa-chevron-down"></i>`; document.getElementById("employeeDropdownList").classList.remove("show"); document.getElementById("selectedEmployeeDisplay").classList.remove("active"); populateEmployeeDropdown(val); }
+function toggleEmployeeDropdown() { document.getElementById("employeeDropdownList").classList.toggle("show"); document.getElementById("selectedEmployeeDisplay").classList.toggle("active"); if(document.getElementById("employeeDropdownList").classList.contains("show")) document.getElementById("employeeDropdownSearch")?.focus(); }
+function filterEmployeeDropdown() { let q = document.getElementById("employeeDropdownSearch")?.value.toLowerCase()||""; document.querySelectorAll("#employeeOptionsContainer .custom-option").forEach(opt=>{ opt.style.display = opt.innerText.toLowerCase().includes(q) ? "flex" : "none"; }); }
 
 async function init() { 
     await initDefaultData(); 
     loadCategoriesFromFirebase(); 
-    loadDepartmentsFromFirebase(); 
+    loadDepartmentsFromFirebase();
     attachRealtimeListeners(); 
     document.querySelectorAll('.nav-item').forEach(i=>i.addEventListener('click',()=>showPage(i.getAttribute('data-page')))); 
-    document.getElementById("addAssetBtn")?.addEventListener('click',()=>{ 
-        editingAssetId=null; 
-        document.getElementById("assetModalTitle").innerText="Add Asset"; 
-        document.getElementById("assetId").value=""; 
-        document.getElementById("assetTag").value=""; 
-        refreshCategorySelectors(); 
-        document.getElementById("assetBrand").value=""; 
-        document.getElementById("assetModel").value=""; 
-        document.getElementById("assetStatus").value="In Stock"; 
-        document.getElementById("assetEmployee").value=""; 
-        document.getElementById("selectedEmployeeDisplay").innerHTML=`Select Employee... <i class="fas fa-chevron-down"></i>`; 
-        populateEmployeeDropdown(""); 
-        document.getElementById("assetModal").classList.add("open"); 
-    }); 
-    document.getElementById("addEmployeeBtn")?.addEventListener('click',()=>{ 
-        editingEmployeeId=null; 
-        document.getElementById("employeeModalTitle").innerText="Add Employee"; 
-        document.getElementById("employeeId").value=""; 
-        document.getElementById("empName").value=""; 
-        document.getElementById("empId").value=""; 
-        document.getElementById("empDesignation").value=""; 
-        refreshDepartmentSelectors(); 
-        document.getElementById("empDept").value=departments[0] || "IT"; 
-        document.getElementById("employeeModal").classList.add("open"); 
-    }); 
+    document.getElementById("addAssetBtn")?.addEventListener('click',()=>{ editingAssetId=null; document.getElementById("assetModalTitle").innerText="Add Asset"; document.getElementById("assetId").value=""; document.getElementById("assetTag").value=""; refreshCategorySelectors(); document.getElementById("assetBrand").value=""; document.getElementById("assetModel").value=""; document.getElementById("assetStatus").value="In Stock"; document.getElementById("assetEmployee").value=""; document.getElementById("selectedEmployeeDisplay").innerHTML=`Select Employee... <i class="fas fa-chevron-down"></i>`; populateEmployeeDropdown(""); document.getElementById("assetModal").classList.add("open"); }); 
+    document.getElementById("addEmployeeBtn")?.addEventListener('click',()=>{ editingEmployeeId=null; document.getElementById("employeeModalTitle").innerText="Add Employee"; document.getElementById("employeeId").value=""; document.getElementById("empName").value=""; document.getElementById("empId").value=""; document.getElementById("empDesignation").value=""; refreshDepartmentSelectors(); document.getElementById("empDept").value=departments[0] || "IT"; document.getElementById("employeeModal").classList.add("open"); }); 
     document.getElementById("saveAssetBtn")?.addEventListener('click',saveAsset); 
     document.getElementById("saveEmployeeBtn")?.addEventListener('click',saveEmployee); 
     document.getElementById("confirmRepairBtn")?.addEventListener('click',completeRepair); 
@@ -1497,24 +1331,12 @@ async function init() {
     document.getElementById("repairedSearch")?.addEventListener('input',renderRepairedLogs); 
     document.getElementById("manageCategoriesBtn")?.addEventListener('click',openCategoryModal); 
     document.getElementById("addCategoryBtn")?.addEventListener('click',addNewCategory); 
-    document.getElementById("manageDepartmentsBtn")?.addEventListener('click',openDepartmentModal); 
-    document.getElementById("addDepartmentBtn")?.addEventListener('click',addNewDepartment); 
-    document.getElementById("exportLogsBtn")?.addEventListener('click',()=>{ 
-        let csv="Asset Tag,Category,Brand/Model,Issue,Resolution,Issue Date,Repaired Date,Technician\n"+repairedLogs.map(l=>`${l.assetTag},${l.category},${l.brandModel},${l.issueDesc},${l.resolution},${l.issueDate},${l.repairedDate},${l.technician}`).join("\n"); 
-        let a=document.createElement("a"); 
-        a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); 
-        a.download="repaired_logs.csv"; 
-        a.click(); 
-        showToast("Exported"); 
-    }); 
+    document.getElementById("manageDeptsBtn")?.addEventListener('click',openDepartmentModal);
+    document.getElementById("addDeptBtn")?.addEventListener('click',addNewDepartment);
+    document.getElementById("exportLogsBtn")?.addEventListener('click',()=>{ let csv="Asset Tag,Category,Brand/Model,Issue,Resolution,Issue Date,Repaired Date,Technician\n"+repairedLogs.map(l=>`${l.assetTag},${l.category},${l.brandModel},${l.issueDesc},${l.resolution},${l.issueDate},${l.repairedDate},${l.technician}`).join("\n"); let a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="repaired_logs.csv"; a.click(); showToast("Exported"); }); 
     document.getElementById("menuToggle")?.addEventListener('click',()=>document.getElementById("sidebar").classList.toggle("open")); 
     document.getElementById("currentDate").innerText=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); 
-    document.addEventListener('click', function(e) { 
-        if(!e.target.closest('.custom-select-container')) { 
-            document.getElementById("employeeDropdownList")?.classList.remove("show"); 
-            document.getElementById("selectedEmployeeDisplay")?.classList.remove("active"); 
-        } 
-    }); 
+    document.addEventListener('click', function(e) { if(!e.target.closest('.custom-select-container')) { document.getElementById("employeeDropdownList")?.classList.remove("show"); document.getElementById("selectedEmployeeDisplay")?.classList.remove("active"); } }); 
     checkAuth(); 
 }
 init();
