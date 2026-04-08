@@ -1152,11 +1152,11 @@ tr:hover td {
                 <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Issue Reported</th><th>Actions</th></tr></thead><tbody id="faultyTableBody"></tbody></table></div></div>
             </div>
 
-            <!-- Repaired Page -->
+            <!-- Repaired Page - Fixed Table Headers -->
             <div id="repairedPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-history"></i> Repaired Items Log</div><button class="btn-secondary" id="exportLogsBtn"><i class="fas fa-download"></i> Export Logs</button></div>
                 <div style="padding: 0 20px 16px 20px;"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="repairedSearch" placeholder="Search logs..."></div></div>
-                <div class="table-wrapper"><tr><thead><tr><th>#</th><th>Asset Tag</th><th>Category</th><th>Brand/Model</th><th>Issue Description</th><th>Resolution</th><th>Issue Date</th><th>Repaired Date</th><th>Technician</th></tr></thead><tbody id="repairedTableBody"></tbody></table></div></div>
+                <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Category</th><th>Brand</th><th>Model</th><th>Issue Description</th><th>Resolution</th><th>Issue Date</th><th>Repaired Date</th><th>Technician</th></tr></thead><tbody id="repairedTableBody"></tbody></table></div></div>
             </div>
         </div>
     </main>
@@ -1460,7 +1460,7 @@ async function initDefaultData() {
     }
     const lSnap = await db.ref('repairedLogs').once('value');
     if(!lSnap.exists()) { 
-        const logs = [{ id:1, assetTag:"IT-LAP-003", category:"Laptop", brandModel:"Lenovo ThinkPad X1", issueDesc:"Screen flickering", resolution:"Replaced cable", issueDate:"2025-01-10", repairedDate:"2025-01-15", technician:"Ahmed Raza" }]; 
+        const logs = [{ id:1, assetTag:"IT-LAP-003", category:"Laptop", brand:"Lenovo", model:"ThinkPad X1", issueDesc:"Screen flickering", resolution:"Replaced cable", issueDate:"2025-01-10", repairedDate:"2025-01-15", technician:"Ahmed Raza" }]; 
         const obj={}; 
         logs.forEach(l=>obj[l.id]=l); 
         await db.ref('repairedLogs').set(obj); 
@@ -1496,10 +1496,18 @@ function renderAssets() {
     let tbody = document.getElementById("assetsTableBody"); 
     if(!tbody) return; 
     if(f.length===0) { 
-        tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><i class="fas fa-database"></i><p>No assets</p></div></td></tr>`; 
+        tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><i class="fas fa-database"></i><p>No assets</p></div>NonNull</td></tr>`; 
         return; 
     } 
-    tbody.innerHTML = f.map((a,i)=>`<tr><td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td><td><strong>${a.tag}</strong></td><td>${a.category}</td><td>${a.brand}</td><td>${a.model}</td><td>${a.employee||"—"}</td><td>${getStatusBadge(a.status)}</td><td class="action-icons"><i class="fas fa-edit" onclick="editAsset(${a.id})"></i><i class="fas fa-trash-alt" onclick="deleteAsset(${a.id})"></i></td></tr>`).join(''); 
+    tbody.innerHTML = f.map((a,i)=>`<tr><td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td>
+        <td><strong>${a.tag}</strong></td>
+        <td>${a.category}</td>
+        <td>${a.brand}</td>
+        <td>${a.model}</td>
+        <td>${a.employee||"—"}</td>
+        <td>${getStatusBadge(a.status)}</td>
+        <td class="action-icons"><i class="fas fa-edit" onclick="editAsset(${a.id})"></i><i class="fas fa-trash-alt" onclick="deleteAsset(${a.id})"></i></td>
+    </tr>`).join(''); 
 }
 
 function renderEmployees() { 
@@ -1514,7 +1522,15 @@ function renderEmployees() {
     } 
     tb.innerHTML = f.map((e,i)=> { 
         let cnt = assets.filter(a=>a.employee===e.name && a.status==="Assigned").length; 
-        return `<tr><td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td><td><strong>${e.name}</strong></td><td class="badge badge-blue">${e.empId}</td><td>${e.designation}</td><td><span class="badge badge-purple">${e.department}</span></td><td>${cnt>0?`<span class="badge badge-green">${cnt} asset(s)</span>`:"—"}</td><td class="action-icons"><i class="fas fa-edit" onclick="editEmployee(${e.id})"></i><i class="fas fa-trash-alt" onclick="deleteEmployee(${e.id})"></i></td></tr>`; 
+        return `<tr>
+            <td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td>
+            <td><strong>${e.name}</strong></td>
+            <td class="badge badge-blue">${e.empId}</td>
+            <td>${e.designation}</td>
+            <td><span class="badge badge-purple">${e.department}</span></td>
+            <td>${cnt>0?`<span class="badge badge-green">${cnt} asset(s)</span>`:"—"}</td>
+            <td class="action-icons"><i class="fas fa-edit" onclick="editEmployee(${e.id})"></i><i class="fas fa-trash-alt" onclick="deleteEmployee(${e.id})"></i></td>
+        </tr>`; 
     }).join(''); 
 }
 
@@ -1527,19 +1543,39 @@ function renderFaulty() {
         tb.innerHTML=`<tr><td colspan="8"><div class="empty-state"><i class="fas fa-check-circle"></i><p>No faulty items</p></div></td></tr>`; 
         return; 
     } 
-    tb.innerHTML = f.map((a,i)=>`<tr><td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td><td><strong>${a.tag}</strong></td><td>${a.category}</td><td>${a.brand}</td><td>${a.model}</td><td>${a.employee||"—"}</td><td><span class="badge badge-red">Needs Repair</span></td><td><button class="btn-outline" onclick="openRepairModal(${a.id})"><i class="fas fa-wrench"></i> Mark Repaired</button></td></tr>`).join(''); 
+    tb.innerHTML = f.map((a,i)=>`<tr>
+        <td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td>
+        <td><strong>${a.tag}</strong></td>
+        <td>${a.category}</td>
+        <td>${a.brand}</td>
+        <td>${a.model}</td>
+        <td>${a.employee||"—"}</td>
+        <td><span class="badge badge-red">Needs Repair</span></td>
+        <td><button class="btn-outline" onclick="openRepairModal(${a.id})"><i class="fas fa-wrench"></i> Mark Repaired</button></td>
+    </tr>`).join(''); 
 }
 
 function renderRepairedLogs() { 
     let s = document.getElementById("repairedSearch")?.value.toLowerCase()||""; 
-    let f = repairedLogs.filter(l=>l.assetTag.toLowerCase().includes(s)||l.issueDesc.toLowerCase().includes(s)); 
+    let f = repairedLogs.filter(l=>l.assetTag.toLowerCase().includes(s)||l.issueDesc.toLowerCase().includes(s)||l.technician.toLowerCase().includes(s)); 
     let tb = document.getElementById("repairedTableBody"); 
     if(!tb) return; 
     if(f.length===0) { 
-        tb.innerHTML=`<tr><td colspan="9"><div class="empty-state"><i class="fas fa-clipboard-list"></i><p>No logs</p></div></td></tr>`; 
+        tb.innerHTML=`<tr><td colspan="10"><div class="empty-state"><i class="fas fa-clipboard-list"></i><p>No repair logs found</p></div></td></tr>`; 
         return; 
     } 
-    tb.innerHTML = f.map((l,i)=>`<tr><td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td><td><strong>${l.assetTag}</strong></td><td>${l.category}</td><td>${l.brandModel}</td><td>${l.issueDesc}</td><td>${l.resolution}</td><td>${l.issueDate||"—"}</td><td>${l.repairedDate}</td><td><span class="badge badge-blue">${l.technician}</span></td></tr>`).join(''); 
+    tb.innerHTML = f.map((l,i)=>`<tr>
+        <td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td>
+        <td><strong>${l.assetTag}</strong></td>
+        <td>${l.category}</td>
+        <td>${l.brand || "—"}</td>
+        <td>${l.model || "—"}</td>
+        <td>${l.issueDesc || "—"}</td>
+        <td>${l.resolution || "—"}</td>
+        <td>${l.issueDate || "—"}</td>
+        <td>${l.repairedDate || "—"}</td>
+        <td><span class="badge badge-blue">${l.technician || "—"}</span></td>
+    </tr>`).join(''); 
 }
 
 function renderChart() { 
@@ -1554,7 +1590,11 @@ function renderChart() {
     let assignedAssets = assets.filter(a=>a.status==="Assigned").length; 
     let faultRate = assets.length?Math.round(assets.filter(a=>a.status==="Faulty").length/assets.length*100):0; 
     let unassignedEmps = employees.filter(e=>assets.filter(a=>a.employee===e.name && a.status==="Assigned").length===0).length; 
-    let metricsHtml = `<div class="stat-row"><span class="s-label">Total Employees</span><span class="s-val">${employees.length}</span></div><div class="stat-row"><span class="s-label">Assignment Rate</span><span class="s-val" style="color:#4f46e5;">${assets.length?Math.round(assignedAssets/assets.length*100):0}%</span></div><div class="stat-row"><span class="s-label">Available to Issue</span><span class="s-val" style="color:#10b981;">${assets.filter(a=>a.status==="In Stock").length}</span></div><div class="stat-row"><span class="s-label">Fault Rate</span><span class="s-val" style="color:#ef4444;">${faultRate}%</span></div><div class="stat-row"><span class="s-label">Unassigned Employees</span><span class="s-val">${unassignedEmps}</span></div>`; 
+    let metricsHtml = `<div class="stat-row"><span class="s-label">Total Employees</span><span class="s-val">${employees.length}</span></div>
+        <div class="stat-row"><span class="s-label">Assignment Rate</span><span class="s-val" style="color:#4f46e5;">${assets.length?Math.round(assignedAssets/assets.length*100):0}%</span></div>
+        <div class="stat-row"><span class="s-label">Available to Issue</span><span class="s-val" style="color:#10b981;">${assets.filter(a=>a.status==="In Stock").length}</span></div>
+        <div class="stat-row"><span class="s-label">Fault Rate</span><span class="s-val" style="color:#ef4444;">${faultRate}%</span></div>
+        <div class="stat-row"><span class="s-label">Unassigned Employees</span><span class="s-val">${unassignedEmps}</span></div>`; 
     if(document.getElementById("systemMetrics")) document.getElementById("systemMetrics").innerHTML = metricsHtml; 
 }
 
@@ -1709,7 +1749,8 @@ function completeRepair() {
         id:nextId, 
         assetTag:pendingRepairAsset.tag, 
         category:pendingRepairAsset.category, 
-        brandModel:`${pendingRepairAsset.brand} ${pendingRepairAsset.model}`, 
+        brand:pendingRepairAsset.brand,
+        model:pendingRepairAsset.model,
         issueDesc:issue, 
         resolution:res, 
         issueDate:new Date().toISOString().slice(0,10), 
@@ -1721,7 +1762,7 @@ function completeRepair() {
     pendingRepairAsset.employee=""; 
     syncAssetsToFirebase(); 
     closeRepairModal(); 
-    showToast("Repaired logged"); 
+    showToast("Repair completed and logged"); 
 }
 
 function closeAssetModal() { 
@@ -1837,7 +1878,7 @@ async function init() {
     document.getElementById("addDeptBtn")?.addEventListener('click',addNewDepartment);
     
     document.getElementById("exportLogsBtn")?.addEventListener('click',()=>{ 
-        let csv="Asset Tag,Category,Brand/Model,Issue,Resolution,Issue Date,Repaired Date,Technician\n"+repairedLogs.map(l=>`${l.assetTag},${l.category},${l.brandModel},${l.issueDesc},${l.resolution},${l.issueDate},${l.repairedDate},${l.technician}`).join("\n"); 
+        let csv="Asset Tag,Category,Brand,Model,Issue Description,Resolution,Issue Date,Repaired Date,Technician\n"+repairedLogs.map(l=>`${l.assetTag},${l.category},${l.brand},${l.model},${l.issueDesc},${l.resolution},${l.issueDate},${l.repairedDate},${l.technician}`).join("\n"); 
         let a=document.createElement("a"); 
         a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); 
         a.download="repaired_logs.csv"; 
