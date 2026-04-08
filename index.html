@@ -127,10 +127,6 @@ body {
     font-size: 1.2rem;
     font-weight: 800;
     color: #ffffff;
-    -webkit-text-fill-color: white;
-    background: none;
-    -webkit-background-clip: unset;
-    background-clip: unset;
 }
 
 .logo-text p {
@@ -996,7 +992,7 @@ tr:hover td {
     color: #475569;
 }
 
-/* Category & Department Management Chips */
+/* Management Chips */
 .manager-chip {
     display: inline-flex;
     align-items: center;
@@ -1160,7 +1156,7 @@ tr:hover td {
             <div id="repairedPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-history"></i> Repaired Items Log</div><button class="btn-secondary" id="exportLogsBtn"><i class="fas fa-download"></i> Export Logs</button></div>
                 <div style="padding: 0 20px 16px 20px;"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="repairedSearch" placeholder="Search logs..."></div></div>
-                <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Category</th><th>Brand/Model</th><th>Issue Description</th><th>Resolution</th><th>Issue Date</th><th>Repaired Date</th><th>Technician</th></tr></thead><tbody id="repairedTableBody"></tbody></table></div></div>
+                <div class="table-wrapper"><tr><thead><tr><th>#</th><th>Asset Tag</th><th>Category</th><th>Brand/Model</th><th>Issue Description</th><th>Resolution</th><th>Issue Date</th><th>Repaired Date</th><th>Technician</th></tr></thead><tbody id="repairedTableBody"></tbody></table></div></div>
             </div>
         </div>
     </main>
@@ -1178,7 +1174,7 @@ tr:hover td {
     </div>
 </div>
 
-<!-- Department Management Modal (New) -->
+<!-- Department Management Modal -->
 <div id="departmentModal" class="modal-overlay">
     <div class="modal">
         <div class="modal-header"><h3>Manage Departments</h3><button class="close-modal" onclick="closeDepartmentModal()">×</button></div>
@@ -1191,15 +1187,17 @@ tr:hover td {
     </div>
 </div>
 
-<!-- Asset Modal, Employee Modal, Repair Modal (same as before, employee modal uses departments list) -->
+<!-- Asset Modal -->
 <div id="assetModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="assetModalTitle">Add Asset</h3><button class="close-modal" onclick="closeAssetModal()">×</button></div><div class="modal-body"><input type="hidden" id="assetId"><div class="form-group"><label>Asset Tag</label><input id="assetTag"></div><div class="form-group"><label>Category</label><select id="assetCategory"></select></div><div class="form-group"><label>Brand</label><input id="assetBrand"></div><div class="form-group"><label>Model</label><input id="assetModel"></div><div class="form-group"><label>Employee (optional)</label><div class="custom-select-container"><div class="custom-select-header" id="selectedEmployeeDisplay" onclick="toggleEmployeeDropdown()">Select Employee... <i class="fas fa-chevron-down"></i></div><div class="custom-select-dropdown" id="employeeDropdownList"><div class="custom-select-search"><input type="text" id="employeeDropdownSearch" placeholder="Search..." oninput="filterEmployeeDropdown()"></div><div class="custom-select-options" id="employeeOptionsContainer"></div></div></div><input type="hidden" id="assetEmployee"></div><div class="form-group"><label>Status</label><select id="assetStatus"><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeAssetModal()">Cancel</button><button class="btn-primary" id="saveAssetBtn">Save</button></div></div></div>
 
+<!-- Employee Modal -->
 <div id="employeeModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="employeeModalTitle">Add Employee</h3><button class="close-modal" onclick="closeEmployeeModal()">×</button></div><div class="modal-body"><input type="hidden" id="employeeId"><div class="form-group"><label>Full Name</label><input id="empName"></div><div class="form-group"><label>Employee ID</label><input id="empId"></div><div class="form-group"><label>Designation</label><input id="empDesignation"></div><div class="form-group"><label>Department</label><select id="empDept"></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeEmployeeModal()">Cancel</button><button class="btn-primary" id="saveEmployeeBtn">Save</button></div></div></div>
 
+<!-- Repair Modal -->
 <div id="repairModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3>Mark as Repaired</h3><button class="close-modal" onclick="closeRepairModal()">×</button></div><div class="modal-body"><input type="hidden" id="repairAssetId"><div class="form-group"><label>Issue Description</label><textarea id="repairIssueDesc" placeholder="Describe the issue..."></textarea></div><div class="form-group"><label>Resolution / Fix Applied</label><textarea id="repairResolution" placeholder="What was done to fix it..."></textarea></div><div class="form-group"><label>Technician Name</label><input id="repairTechnician" placeholder="Who performed the repair"></div><div class="form-group"><label>Repaired Date</label><input type="date" id="repairDate"></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeRepairModal()">Cancel</button><button class="btn-primary" id="confirmRepairBtn">Complete Repair</button></div></div></div>
 
 <script>
-// FIREBASE CONFIGURATION (unchanged)
+// FIREBASE CONFIGURATION
 const firebaseConfig = {
     apiKey: "AIzaSyAtHQpvQfF8LPB_1RWUkP78H2a5Uxf7y_Y",
     authDomain: "td-inventory-26899.firebaseapp.com",
@@ -1215,41 +1213,167 @@ let assets = [], employees = [], repairedLogs = [];
 let categories = ["Laptop", "Mouse", "Keyboard", "Headphones", "Monitor", "Docking Station", "Printer", "Tablet"];
 let departments = ["IT", "Engineering", "Sales", "HR", "Finance", "Marketing", "Operations"];
 
-function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast'; t.style.background = isErr ? '#dc2626' : '#10b981'; t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+function showToast(msg, isErr = false) { 
+    const t = document.createElement('div'); 
+    t.className = 'toast'; 
+    t.style.background = isErr ? '#dc2626' : '#10b981'; 
+    t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`; 
+    document.body.appendChild(t); 
+    setTimeout(() => t.remove(), 3000); 
+}
 
-// --- Categories Logic (unchanged but functions renamed for clarity) ---
+// --- Categories Functions ---
 async function syncCategories() { await db.ref('appConfig/categories').set(categories); }
-function loadCategoriesFromFirebase() { db.ref('appConfig/categories').on('value', snap => { if(snap.exists()) categories = snap.val(); else syncCategories(); refreshCategorySelectors(); renderCategoryManager(); }); }
+function loadCategoriesFromFirebase() { 
+    db.ref('appConfig/categories').on('value', snap => { 
+        if(snap.exists()) categories = snap.val(); 
+        else syncCategories(); 
+        refreshCategorySelectors(); 
+        renderCategoryManager(); 
+    }); 
+}
 function refreshCategorySelectors() {
     const select = document.getElementById("categoryFilterAssets");
-    if(select) { const currentVal = select.value; select.innerHTML = `<option value="">All Categories</option>` + categories.map(c => `<option value="${c}">${c}</option>`).join(''); if(currentVal && categories.includes(currentVal)) select.value = currentVal; else select.value = ""; }
+    if(select) { 
+        const currentVal = select.value; 
+        select.innerHTML = `<option value="">All Categories</option>` + categories.map(c => `<option value="${c}">${c}</option>`).join(''); 
+        if(currentVal && categories.includes(currentVal)) select.value = currentVal; 
+        else select.value = ""; 
+    }
     const assetCatSelect = document.getElementById("assetCategory");
-    if(assetCatSelect) { const old = assetCatSelect.value; assetCatSelect.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join(''); if(old && categories.includes(old)) assetCatSelect.value = old; else assetCatSelect.value = categories[0] || "Laptop"; }
+    if(assetCatSelect) { 
+        const old = assetCatSelect.value; 
+        assetCatSelect.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join(''); 
+        if(old && categories.includes(old)) assetCatSelect.value = old; 
+        else assetCatSelect.value = categories[0] || "Laptop"; 
+    }
 }
-function renderCategoryManager() { const container = document.getElementById("categoryListContainer"); if(!container) return; if(categories.length === 0) { container.innerHTML = '<div class="empty-state" style="padding:20px;">No categories.</div>'; return; } container.innerHTML = categories.map(cat => `<div class="badge-manager"><span>${cat}</span><i class="fas fa-trash-alt" onclick="deleteCategory('${cat.replace(/'/g, "\\'")}')"></i></div>`).join(''); }
-window.deleteCategory = function(catName) { if(assets.some(a => a.category === catName)) { showToast(`Cannot delete "${catName}": assets using it.`, true); return; } categories = categories.filter(c => c !== catName); syncCategories(); refreshCategorySelectors(); renderCategoryManager(); showToast(`Category "${catName}" deleted.`); };
-function addNewCategory() { const input = document.getElementById("newCategoryName"); const newCat = input.value.trim(); if(!newCat) { showToast("Enter category name", true); return; } if(categories.includes(newCat)) { showToast("Category exists", true); return; } categories.push(newCat); syncCategories(); refreshCategorySelectors(); renderCategoryManager(); input.value = ""; showToast(`Category "${newCat}" added.`); }
+function renderCategoryManager() { 
+    const container = document.getElementById("categoryListContainer"); 
+    if(!container) return; 
+    if(categories.length === 0) { 
+        container.innerHTML = '<div class="empty-state" style="padding:20px;">No categories. Add one above.</div>'; 
+        return; 
+    } 
+    container.innerHTML = categories.map(cat => `<div class="badge-manager"><span>${cat}</span><i class="fas fa-trash-alt" onclick="deleteCategory('${cat.replace(/'/g, "\\'")}')"></i></div>`).join(''); 
+}
+window.deleteCategory = function(catName) { 
+    if(assets.some(a => a.category === catName)) { 
+        showToast(`Cannot delete "${catName}": assets are using this category.`, true); 
+        return; 
+    } 
+    categories = categories.filter(c => c !== catName); 
+    syncCategories(); 
+    refreshCategorySelectors(); 
+    renderCategoryManager(); 
+    showToast(`Category "${catName}" deleted.`); 
+};
+function addNewCategory() { 
+    const input = document.getElementById("newCategoryName"); 
+    const newCat = input.value.trim(); 
+    if(!newCat) { showToast("Please enter category name", true); return; } 
+    if(categories.includes(newCat)) { showToast("Category already exists", true); return; } 
+    categories.push(newCat); 
+    syncCategories(); 
+    refreshCategorySelectors(); 
+    renderCategoryManager(); 
+    input.value = ""; 
+    showToast(`Category "${newCat}" added.`); 
+}
+function openCategoryModal() { 
+    renderCategoryManager();
+    document.getElementById("categoryModal").classList.add("open"); 
+}
+function closeCategoryModal() { document.getElementById("categoryModal").classList.remove("open"); }
 
-// --- Departments Logic (new) ---
+// --- Departments Functions ---
 async function syncDepartments() { await db.ref('appConfig/departments').set(departments); }
-function loadDepartmentsFromFirebase() { db.ref('appConfig/departments').on('value', snap => { if(snap.exists()) departments = snap.val(); else syncDepartments(); refreshDepartmentSelectors(); renderDepartmentManager(); }); }
+function loadDepartmentsFromFirebase() { 
+    db.ref('appConfig/departments').on('value', snap => { 
+        if(snap.exists()) departments = snap.val(); 
+        else syncDepartments(); 
+        refreshDepartmentSelectors(); 
+        renderDepartmentManager(); 
+    }); 
+}
 function refreshDepartmentSelectors() {
     const deptFilter = document.getElementById("deptFilter");
-    if(deptFilter) { const currentVal = deptFilter.value; deptFilter.innerHTML = `<option value="">All Departments</option>` + departments.map(d => `<option value="${d}">${d}</option>`).join(''); if(currentVal && departments.includes(currentVal)) deptFilter.value = currentVal; else deptFilter.value = ""; }
+    if(deptFilter) { 
+        const currentVal = deptFilter.value; 
+        deptFilter.innerHTML = `<option value="">All Departments</option>` + departments.map(d => `<option value="${d}">${d}</option>`).join(''); 
+        if(currentVal && departments.includes(currentVal)) deptFilter.value = currentVal; 
+        else deptFilter.value = ""; 
+    }
     const empDeptSelect = document.getElementById("empDept");
-    if(empDeptSelect) { const old = empDeptSelect.value; empDeptSelect.innerHTML = departments.map(d => `<option value="${d}">${d}</option>`).join(''); if(old && departments.includes(old)) empDeptSelect.value = old; else empDeptSelect.value = departments[0] || "IT"; }
+    if(empDeptSelect) { 
+        const old = empDeptSelect.value; 
+        empDeptSelect.innerHTML = departments.map(d => `<option value="${d}">${d}</option>`).join(''); 
+        if(old && departments.includes(old)) empDeptSelect.value = old; 
+        else empDeptSelect.value = departments[0] || "IT"; 
+    }
 }
-function renderDepartmentManager() { const container = document.getElementById("deptListContainer"); if(!container) return; if(departments.length === 0) { container.innerHTML = '<div class="empty-state" style="padding:20px;">No departments.</div>'; return; } container.innerHTML = departments.map(dept => `<div class="badge-manager"><span>${dept}</span><i class="fas fa-trash-alt" onclick="deleteDepartment('${dept.replace(/'/g, "\\'")}')"></i></div>`).join(''); }
-window.deleteDepartment = function(deptName) { if(employees.some(e => e.department === deptName)) { if(confirm(`Department "${deptName}" has employees. They will be moved to IT. Continue?`)) { employees.forEach(e => { if(e.department === deptName) e.department = "IT"; }); syncEmployeesToFirebase(); } else return; } departments = departments.filter(d => d !== deptName); syncDepartments(); refreshDepartmentSelectors(); renderDepartmentManager(); showToast(`Department "${deptName}" deleted.`); };
-function addNewDepartment() { const input = document.getElementById("newDeptName"); const newDept = input.value.trim(); if(!newDept) { showToast("Enter department name", true); return; } if(departments.includes(newDept)) { showToast("Department exists", true); return; } departments.push(newDept); syncDepartments(); refreshDepartmentSelectors(); renderDepartmentManager(); input.value = ""; showToast(`Department "${newDept}" added.`); }
-function openDepartmentModal() { document.getElementById("departmentModal").classList.add("open"); renderDepartmentManager(); }
+function renderDepartmentManager() { 
+    const container = document.getElementById("deptListContainer"); 
+    if(!container) return; 
+    if(departments.length === 0) { 
+        container.innerHTML = '<div class="empty-state" style="padding:20px;">No departments. Add one above.</div>'; 
+        return; 
+    } 
+    container.innerHTML = departments.map(dept => `<div class="badge-manager"><span>${dept}</span><i class="fas fa-trash-alt" onclick="deleteDepartment('${dept.replace(/'/g, "\\'")}')"></i></div>`).join(''); 
+}
+window.deleteDepartment = function(deptName) { 
+    if(employees.some(e => e.department === deptName)) { 
+        if(confirm(`Department "${deptName}" has employees. They will be moved to IT. Continue?`)) { 
+            employees.forEach(e => { if(e.department === deptName) e.department = "IT"; }); 
+            syncEmployeesToFirebase(); 
+        } else return; 
+    } 
+    departments = departments.filter(d => d !== deptName); 
+    syncDepartments(); 
+    refreshDepartmentSelectors(); 
+    renderDepartmentManager(); 
+    showToast(`Department "${deptName}" deleted.`); 
+};
+function addNewDepartment() { 
+    const input = document.getElementById("newDeptName"); 
+    const newDept = input.value.trim(); 
+    if(!newDept) { showToast("Please enter department name", true); return; } 
+    if(departments.includes(newDept)) { showToast("Department already exists", true); return; } 
+    departments.push(newDept); 
+    syncDepartments(); 
+    refreshDepartmentSelectors(); 
+    renderDepartmentManager(); 
+    input.value = ""; 
+    showToast(`Department "${newDept}" added.`); 
+}
+function openDepartmentModal() { 
+    renderDepartmentManager();
+    document.getElementById("departmentModal").classList.add("open"); 
+}
 function closeDepartmentModal() { document.getElementById("departmentModal").classList.remove("open"); }
 
-// --- Authentication & Data Sync (unchanged logic) ---
-function checkAuth() { if(sessionStorage.getItem('it_inventory_auth') === 'true') { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('mainApp').style.display = 'flex'; } }
-function attemptLogin(e) { e.preventDefault(); const u = document.getElementById('loginUser').value, p = document.getElementById('loginPass').value; if(u === 'admin' && p === 'admin') { sessionStorage.setItem('it_inventory_auth','true'); document.getElementById('loginScreen').style.display='none'; document.getElementById('mainApp').style.display='flex'; showToast("Logged in!"); } else { document.getElementById('loginError').style.display='block'; } }
+// --- Authentication ---
+function checkAuth() { 
+    if(sessionStorage.getItem('it_inventory_auth') === 'true') { 
+        document.getElementById('loginScreen').style.display = 'none'; 
+        document.getElementById('mainApp').style.display = 'flex'; 
+    } 
+}
+function attemptLogin(e) { 
+    e.preventDefault(); 
+    const u = document.getElementById('loginUser').value, p = document.getElementById('loginPass').value; 
+    if(u === 'admin' && p === 'admin') { 
+        sessionStorage.setItem('it_inventory_auth','true'); 
+        document.getElementById('loginScreen').style.display='none'; 
+        document.getElementById('mainApp').style.display='flex'; 
+        showToast("Logged in!"); 
+    } else { 
+        document.getElementById('loginError').style.display='block'; 
+    } 
+}
 function logout() { sessionStorage.removeItem('it_inventory_auth'); location.reload(); }
 
+// --- Data Sync ---
 let editingAssetId = null, editingEmployeeId = null, pendingRepairAsset = null;
 function attachRealtimeListeners() {
     db.ref('assets').on('value', snap => { if(snap.exists()) assets = Object.values(snap.val()); else assets = []; renderAllPages(); updateCounters(); renderChart(); });
