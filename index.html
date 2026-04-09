@@ -1,3 +1,5 @@
+Here is the updated HTML file with the Chinese characters removed from the Assets tab and all dropdowns styled with rounded corners to match your theme.
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -592,9 +594,10 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
-.filter-select {
-    padding: 8px 18px;
-    border-radius: 40px;
+/* Rounded and stylish dropdowns for ALL selects */
+.filter-select, select {
+    padding: 8px 20px;
+    border-radius: 40px !important;
     border: 1px solid #e2e8f0;
     background: #f8fafc;
     font-size: 0.8rem;
@@ -602,13 +605,26 @@ body {
     color: #334155;
     cursor: pointer;
     transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 36px;
 }
 
-.filter-select:hover {
+.filter-select:hover, select:hover {
     border-color: #93c5fd;
+    background-color: #ffffff;
 }
 
-/* Custom Searchable Select for Employees */
+.filter-select:focus, select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+/* Custom Select Container for Employee dropdown (already rounded) */
 .custom-select-container {
     position: relative;
     width: 100%;
@@ -617,7 +633,7 @@ body {
     width: 100%;
     padding: 12px 16px;
     border: 1px solid #e2e8f0;
-    border-radius: 16px;
+    border-radius: 40px;
     font-size: 0.85rem;
     font-family: 'Inter', sans-serif;
     background: #fefefe;
@@ -643,7 +659,7 @@ body {
     right: 0;
     background: white;
     border: 1px solid #e2e8f0;
-    border-radius: 16px;
+    border-radius: 20px;
     margin-top: 8px;
     z-index: 1000;
     box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
@@ -661,7 +677,7 @@ body {
     width: 100%;
     padding: 10px 14px;
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
+    border-radius: 40px;
     font-size: 0.8rem;
     outline: none;
     background: white;
@@ -908,7 +924,7 @@ tr:hover td {
     width: 100%;
     padding: 12px 16px;
     border: 1px solid #e2e8f0;
-    border-radius: 16px;
+    border-radius: 40px;
     font-size: 0.85rem;
     font-family: 'Inter', sans-serif;
     transition: all 0.2s;
@@ -924,6 +940,7 @@ tr:hover td {
 .form-group textarea {
     resize: vertical;
     min-height: 80px;
+    border-radius: 20px;
 }
 
 .modal-footer {
@@ -1154,32 +1171,32 @@ tr:hover td {
                 </div>
             </div>
 
-            <!-- Assets Page with Serial Number Column -->
+            <!-- Assets Page - Fixed: removed Chinese characters (changed the table header) -->
             <div id="assetsPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-list"></i> All Assets</div><button class="btn-primary" id="addAssetBtn"><i class="fas fa-plus"></i> Add Asset</button></div>
                 <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="assetSearch" placeholder="Search by tag, serial, brand..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="categoryFilterAssets"><option value="">All Categories</option></select><div class="manager-chip" id="manageCategoriesBtn"><i class="fas fa-edit"></i> Manage</div></div><select class="filter-select" id="statusFilterAssets"><option value="">All Status</option><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div>
-                <div class="table-wrapper"><table><thead><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Status</th><th>Actions</th></tr></thead><tbody id="assetsTableBody"></tbody></table></div></div>
+                <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Status</th><th>Actions</th></tr></thead><tbody id="assetsTableBody"></tbody></table></div></div>
             </div>
 
             <!-- Employees Page -->
             <div id="employeesPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-id-badge"></i> Employees</div><button class="btn-primary" id="addEmployeeBtn"><i class="fas fa-user-plus"></i> Add Employee</button></div>
                 <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="employeeSearch" placeholder="Search..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="deptFilter"><option value="">All Departments</option></select><div class="manager-chip" id="manageDeptsBtn"><i class="fas fa-building"></i> Manage</div></div></div></div>
-                <div class="table-wrapper"><table><thead><th>#</th><th>Name</th><th>Employee ID</th><th>Designation</th><th>Department</th><th>Assets</th><th>Actions</th></tr></thead><tbody id="employeesTableBody"></tbody></table></div></div>
+                <div class="table-wrapper"><table><thead><tr><th>#</th><th>Name</th><th>Employee ID</th><th>Designation</th><th>Department</th><th>Assets</th><th>Actions</th></tr></thead><tbody id="employeesTableBody"></tbody></table></div></div>
             </div>
 
             <!-- Faulty Page -->
             <div id="faultyPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-tools"></i> Faulty Equipment</div></div>
                 <div style="padding: 0 20px 16px 20px;"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="faultySearch" placeholder="Search faulty items..."></div></div>
-                <div class="table-wrapper"><table><thead><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Status</th><th>Actions</th></tr></thead><tbody id="faultyTableBody"></tbody></table></div></div>
+                <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Status</th><th>Actions</th></tr></thead><tbody id="faultyTableBody"></tbody></table></div></div>
             </div>
 
             <!-- Repaired Page -->
             <div id="repairedPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-history"></i> Repaired Items Log</div><button class="btn-secondary" id="exportLogsBtn"><i class="fas fa-download"></i> Export Logs</button></div>
                 <div style="padding: 0 20px 16px 20px;"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="repairedSearch" placeholder="Search logs..."></div></div>
-                <div class="table-wrapper"><table><thead><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Issue Description</th><th>Resolution</th><th>Issue Date</th><th>Repaired Date</th><th>Technician</th></tr></thead><tbody id="repairedTableBody"></tbody></table></div></div>
+                <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Issue Description</th><th>Resolution</th><th>Issue Date</th><th>Repaired Date</th><th>Technician</th></tr></thead><tbody id="repairedTableBody"></tbody></table></div></div>
             </div>
         </div>
     </main>
@@ -1210,7 +1227,7 @@ tr:hover td {
     </div>
 </div>
 
-<!-- Asset Modal with Serial Number Field -->
+<!-- Asset Modal -->
 <div id="assetModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="assetModalTitle">Add Asset</h3><button class="close-modal" onclick="closeAssetModal()">×</button></div><div class="modal-body"><input type="hidden" id="assetId"><div class="form-group"><label>Asset Tag <span class="required">*</span></label><input id="assetTag" placeholder="e.g., IT-LAP-001"></div><div class="form-group"><label>Serial Number <span class="required">*</span></label><input id="assetSerial" placeholder="Unique serial number for tracking"></div><div class="form-group"><label>Category <span class="required">*</span></label><select id="assetCategory"></select></div><div class="form-group"><label>Brand <span class="required">*</span></label><input id="assetBrand" placeholder="e.g., Dell, HP"></div><div class="form-group"><label>Model <span class="required">*</span></label><input id="assetModel" placeholder="e.g., Latitude 5440"></div><div class="form-group"><label>Employee (optional)</label><div class="custom-select-container"><div class="custom-select-header" id="selectedEmployeeDisplay" onclick="toggleEmployeeDropdown()">Select Employee... <i class="fas fa-chevron-down"></i></div><div class="custom-select-dropdown" id="employeeDropdownList"><div class="custom-select-search"><input type="text" id="employeeDropdownSearch" placeholder="Search..." oninput="filterEmployeeDropdown()"></div><div class="custom-select-options" id="employeeOptionsContainer"></div></div></div><input type="hidden" id="assetEmployee"></div><div class="form-group"><label>Status</label><select id="assetStatus"><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeAssetModal()">Cancel</button><button class="btn-primary" id="saveAssetBtn">Save</button></div></div></div>
 
 <!-- Employee Modal -->
@@ -1220,7 +1237,7 @@ tr:hover td {
 <div id="repairModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3>Mark as Repaired</h3><button class="close-modal" onclick="closeRepairModal()">×</button></div><div class="modal-body"><input type="hidden" id="repairAssetId"><div class="form-group"><label>Issue Description</label><textarea id="repairIssueDesc" placeholder="Describe the issue..."></textarea></div><div class="form-group"><label>Resolution / Fix Applied</label><textarea id="repairResolution" placeholder="What was done to fix it..."></textarea></div><div class="form-group"><label>Technician Name</label><input id="repairTechnician" placeholder="Who performed the repair"></div><div class="form-group"><label>Repaired Date</label><input type="date" id="repairDate"></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeRepairModal()">Cancel</button><button class="btn-primary" id="confirmRepairBtn">Complete Repair</button></div></div></div>
 
 <script>
-// FIREBASE CONFIGURATION
+// FIREBASE CONFIGURATION (unchanged)
 const firebaseConfig = {
     apiKey: "AIzaSyAtHQpvQfF8LPB_1RWUkP78H2a5Uxf7y_Y",
     authDomain: "td-inventory-26899.firebaseapp.com",
@@ -1245,7 +1262,7 @@ function showToast(msg, isErr = false) {
     setTimeout(() => t.remove(), 3000); 
 }
 
-// --- Categories Logic ---
+// Categories Logic (unchanged)
 async function syncCategories() { await db.ref('appConfig/categories').set(categories); }
 function loadCategoriesFromFirebase() { 
     db.ref('appConfig/categories').on('value', snap => { 
@@ -1292,7 +1309,7 @@ function addNewCategory() {
 function openCategoryModal() { renderCategoryManager(); document.getElementById("categoryModal").classList.add("open"); }
 function closeCategoryModal() { document.getElementById("categoryModal").classList.remove("open"); }
 
-// --- Departments Logic ---
+// Departments Logic (unchanged)
 async function syncDepartments() { await db.ref('appConfig/departments').set(departments); }
 function loadDepartmentsFromFirebase() { 
     db.ref('appConfig/departments').on('value', snap => { 
@@ -1335,7 +1352,7 @@ function addNewDepartment() {
 function openDepartmentModal() { renderDepartmentManager(); document.getElementById("departmentModal").classList.add("open"); }
 function closeDepartmentModal() { document.getElementById("departmentModal").classList.remove("open"); }
 
-// --- Authentication & Data Sync ---
+// Auth
 function checkAuth() { if(sessionStorage.getItem('it_inventory_auth') === 'true') { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('mainApp').style.display = 'flex'; } }
 function attemptLogin(e) { e.preventDefault(); const u = document.getElementById('loginUser').value, p = document.getElementById('loginPass').value; if(u === 'admin' && p === 'admin') { sessionStorage.setItem('it_inventory_auth','true'); document.getElementById('loginScreen').style.display='none'; document.getElementById('mainApp').style.display='flex'; showToast("Logged in!"); } else { document.getElementById('loginError').style.display='block'; } }
 function logout() { sessionStorage.removeItem('it_inventory_auth'); location.reload(); }
@@ -1395,7 +1412,7 @@ function renderAssets() {
     let f = assets.filter(a=> (a.tag.toLowerCase().includes(s)||a.serial?.toLowerCase().includes(s)||a.brand.toLowerCase().includes(s)) && (cat===""||a.category===cat) && (stat===""||a.status===stat)); 
     let tbody = document.getElementById("assetsTableBody"); 
     if(!tbody) return; 
-    if(f.length===0) { tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><i class="fas fa-database"></i><p>No assets</p></div>NonNull</td></tr>`; return; } 
+    if(f.length===0) { tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><i class="fas fa-database"></i><p>No assets</p></div></td></tr>`; return; } 
     tbody.innerHTML = f.map((a,i)=>`<tr><td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td>
         <td><strong>${a.tag}</strong></td>
         <td><span class="serial-highlight">${a.serial || "—"}</span></td>
@@ -1405,7 +1422,7 @@ function renderAssets() {
         <td>${a.employee||"—"}</td>
         <td>${getStatusBadge(a.status)}</td>
         <td class="action-icons"><i class="fas fa-edit" onclick="editAsset(${a.id})"></i><i class="fas fa-trash-alt" onclick="deleteAsset(${a.id})"></i></td>
-    攻关`).join(''); 
+    </tr>`).join(''); 
 }
 
 function renderEmployees() { 
@@ -1506,7 +1523,6 @@ function saveAsset() {
         stat=document.getElementById("assetStatus").value; 
     if(!tag||!brand||!model) { showToast("Asset Tag, Brand and Model are required",true); return; } 
     if(!serial) { showToast("Serial Number is required for tracking",true); return; }
-    // Check for duplicate serial number
     if(!editingAssetId && assets.some(a=>a.serial === serial)) { showToast("Serial number already exists!", true); return; }
     if(editingAssetId && assets.some(a=>a.id !== editingAssetId && a.serial === serial)) { showToast("Serial number already exists!", true); return; }
     if(stat==="Assigned" && emp===""){ showToast("Select employee for assigned",true); return; } 
@@ -1610,3 +1626,4 @@ init();
 </script>
 </body>
 </html>
+```
