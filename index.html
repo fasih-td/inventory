@@ -9,6 +9,8 @@
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<!-- SheetJS for Excel Import/Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 * {
     margin: 0;
@@ -1081,6 +1083,58 @@ tr:hover td {
     font-size: 0.75rem;
     letter-spacing: 0.5px;
 }
+
+/* Specs Field */
+#laptopSpecsGroup {
+    display: none;
+}
+#laptopSpecsGroup.visible {
+    display: block;
+}
+
+/* Import button style */
+.btn-import {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    padding: 8px 18px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #16a34a;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-import:hover {
+    background: #dcfce7;
+    border-color: #4ade80;
+}
+.btn-export {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    padding: 8px 18px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #2563eb;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-export:hover {
+    background: #dbeafe;
+    border-color: #60a5fa;
+}
+.panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
 </style>
 </head>
 <body>
@@ -1171,14 +1225,14 @@ tr:hover td {
 
             <!-- Assets Page - Fixed: removed Chinese characters (changed the table header) -->
             <div id="assetsPage" class="page">
-                <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-list"></i> All Assets</div><button class="btn-primary" id="addAssetBtn"><i class="fas fa-plus"></i> Add Asset</button></div>
+                <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-list"></i> All Assets</div><div class="panel-actions"><button class="btn-import" id="importAssetsBtn"><i class="fas fa-file-upload"></i> Import Excel</button><button class="btn-export" id="exportAssetsBtn"><i class="fas fa-file-download"></i> Export Excel</button><button class="btn-primary" id="addAssetBtn"><i class="fas fa-plus"></i> Add Asset</button></div></div>
                 <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="assetSearch" placeholder="Search by tag, serial, brand..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="categoryFilterAssets"><option value="">All Categories</option></select><div class="manager-chip" id="manageCategoriesBtn"><i class="fas fa-edit"></i> Manage</div></div><select class="filter-select" id="statusFilterAssets"><option value="">All Status</option><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div>
                 <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Status</th><th>Actions</th></tr></thead><tbody id="assetsTableBody"></tbody></table></div></div>
             </div>
 
             <!-- Employees Page -->
             <div id="employeesPage" class="page">
-                <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-id-badge"></i> Employees</div><button class="btn-primary" id="addEmployeeBtn"><i class="fas fa-user-plus"></i> Add Employee</button></div>
+                <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-id-badge"></i> Employees</div><div class="panel-actions"><button class="btn-import" id="importEmployeesBtn"><i class="fas fa-file-upload"></i> Import Excel</button><button class="btn-export" id="exportEmployeesBtn"><i class="fas fa-file-download"></i> Export Excel</button><button class="btn-primary" id="addEmployeeBtn"><i class="fas fa-user-plus"></i> Add Employee</button></div></div>
                 <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="employeeSearch" placeholder="Search..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="deptFilter"><option value="">All Departments</option></select><div class="manager-chip" id="manageDeptsBtn"><i class="fas fa-building"></i> Manage</div></div></div></div>
                 <div class="table-wrapper"><table><thead><tr><th>#</th><th>Name</th><th>Employee ID</th><th>Designation</th><th>Department</th><th>Assets</th><th>Actions</th></tr></thead><tbody id="employeesTableBody"></tbody></table></div></div>
             </div>
@@ -1226,7 +1280,7 @@ tr:hover td {
 </div>
 
 <!-- Asset Modal -->
-<div id="assetModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="assetModalTitle">Add Asset</h3><button class="close-modal" onclick="closeAssetModal()">×</button></div><div class="modal-body"><input type="hidden" id="assetId"><div class="form-group"><label>Asset Tag <span class="required">*</span></label><input id="assetTag" placeholder="e.g., IT-LAP-001"></div><div class="form-group"><label>Serial Number <span class="required">*</span></label><input id="assetSerial" placeholder="Unique serial number for tracking"></div><div class="form-group"><label>Category <span class="required">*</span></label><select id="assetCategory"></select></div><div class="form-group"><label>Brand <span class="required">*</span></label><input id="assetBrand" placeholder="e.g., Dell, HP"></div><div class="form-group"><label>Model <span class="required">*</span></label><input id="assetModel" placeholder="e.g., Latitude 5440"></div><div class="form-group"><label>Employee (optional)</label><div class="custom-select-container"><div class="custom-select-header" id="selectedEmployeeDisplay" onclick="toggleEmployeeDropdown()">Select Employee... <i class="fas fa-chevron-down"></i></div><div class="custom-select-dropdown" id="employeeDropdownList"><div class="custom-select-search"><input type="text" id="employeeDropdownSearch" placeholder="Search..." oninput="filterEmployeeDropdown()"></div><div class="custom-select-options" id="employeeOptionsContainer"></div></div></div><input type="hidden" id="assetEmployee"></div><div class="form-group"><label>Status</label><select id="assetStatus"><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeAssetModal()">Cancel</button><button class="btn-primary" id="saveAssetBtn">Save</button></div></div></div>
+<div id="assetModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="assetModalTitle">Add Asset</h3><button class="close-modal" onclick="closeAssetModal()">×</button></div><div class="modal-body"><input type="hidden" id="assetId"><div class="form-group"><label>Asset Tag <span class="required">*</span></label><input id="assetTag" placeholder="e.g., IT-LAP-001"></div><div class="form-group"><label>Serial Number <span style="color:#94a3b8;font-size:0.65rem;font-weight:500;text-transform:none;">(optional)</span></label><input id="assetSerial" placeholder="Leave blank if not available"></div><div class="form-group"><label>Category <span class="required">*</span></label><select id="assetCategory" onchange="onCategoryChange()"></select></div><div class="form-group" id="laptopSpecsGroup"><label>Laptop Specs</label><textarea id="assetSpecs" placeholder="e.g., Intel i7, 16GB RAM, 512GB SSD, Windows 11" style="border-radius:16px;min-height:70px;"></textarea></div><div class="form-group"><label>Brand <span class="required">*</span></label><input id="assetBrand" placeholder="e.g., Dell, HP"></div><div class="form-group"><label>Model <span class="required">*</span></label><input id="assetModel" placeholder="e.g., Latitude 5440"></div><div class="form-group"><label>Employee (optional)</label><div class="custom-select-container"><div class="custom-select-header" id="selectedEmployeeDisplay" onclick="toggleEmployeeDropdown()">Select Employee... <i class="fas fa-chevron-down"></i></div><div class="custom-select-dropdown" id="employeeDropdownList"><div class="custom-select-search"><input type="text" id="employeeDropdownSearch" placeholder="Search..." oninput="filterEmployeeDropdown()"></div><div class="custom-select-options" id="employeeOptionsContainer"></div></div></div><input type="hidden" id="assetEmployee"></div><div class="form-group"><label>Status</label><select id="assetStatus"><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeAssetModal()">Cancel</button><button class="btn-primary" id="saveAssetBtn">Save</button></div></div></div>
 
 <!-- Employee Modal -->
 <div id="employeeModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="employeeModalTitle">Add Employee</h3><button class="close-modal" onclick="closeEmployeeModal()">×</button></div><div class="modal-body"><input type="hidden" id="employeeId"><div class="form-group"><label>Full Name</label><input id="empName"></div><div class="form-group"><label>Employee ID</label><input id="empId"></div><div class="form-group"><label>Designation</label><input id="empDesignation"></div><div class="form-group"><label>Department</label><select id="empDept"></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeEmployeeModal()">Cancel</button><button class="btn-primary" id="saveEmployeeBtn">Save</button></div></div></div>
@@ -1497,6 +1551,8 @@ function editAsset(id) {
         document.getElementById("assetSerial").value=a.serial || ""; 
         refreshCategorySelectors(); 
         document.getElementById("assetCategory").value=a.category; 
+        onCategoryChange();
+        document.getElementById("assetSpecs").value=a.specs||"";
         document.getElementById("assetBrand").value=a.brand; 
         document.getElementById("assetModel").value=a.model; 
         document.getElementById("assetStatus").value=a.status; 
@@ -1518,18 +1574,18 @@ function saveAsset() {
         brand=document.getElementById("assetBrand").value.trim(), 
         model=document.getElementById("assetModel").value.trim(), 
         emp=document.getElementById("assetEmployee").value.trim(), 
-        stat=document.getElementById("assetStatus").value; 
+        stat=document.getElementById("assetStatus").value,
+        specs=(cat==="Laptop")?document.getElementById("assetSpecs").value.trim():""; 
     if(!tag||!brand||!model) { showToast("Asset Tag, Brand and Model are required",true); return; } 
-    if(!serial) { showToast("Serial Number is required for tracking",true); return; }
-    if(!editingAssetId && assets.some(a=>a.serial === serial)) { showToast("Serial number already exists!", true); return; }
-    if(editingAssetId && assets.some(a=>a.id !== editingAssetId && a.serial === serial)) { showToast("Serial number already exists!", true); return; }
+    if(serial && !editingAssetId && assets.some(a=>a.serial && a.serial === serial)) { showToast("Serial number already exists!", true); return; }
+    if(serial && editingAssetId && assets.some(a=>a.id !== editingAssetId && a.serial && a.serial === serial)) { showToast("Serial number already exists!", true); return; }
     if(stat==="Assigned" && emp===""){ showToast("Select employee for assigned",true); return; } 
     if(stat!=="Assigned") emp=""; 
     let nextId = assets.length?Math.max(...assets.map(a=>a.id))+1:1; 
     if(editingAssetId){ 
         let idx=assets.findIndex(a=>a.id===editingAssetId); 
-        if(idx!==-1) assets[idx]={...assets[idx],tag,serial,category:cat,brand,model,employee:emp,status:stat}; 
-    } else { assets.push({id:nextId,tag,serial,category:cat,brand,model,employee:emp,status:stat}); } 
+        if(idx!==-1) assets[idx]={...assets[idx],tag,serial,category:cat,brand,model,employee:emp,status:stat,specs}; 
+    } else { assets.push({id:nextId,tag,serial,category:cat,brand,model,employee:emp,status:stat,specs}); } 
     syncAssetsToFirebase(); closeAssetModal(); showToast("Saved"); 
 }
 
@@ -1592,13 +1648,162 @@ function selectEmployee(val,disp) { document.getElementById("assetEmployee").val
 function toggleEmployeeDropdown() { document.getElementById("employeeDropdownList").classList.toggle("show"); document.getElementById("selectedEmployeeDisplay").classList.toggle("active"); if(document.getElementById("employeeDropdownList").classList.contains("show")) document.getElementById("employeeDropdownSearch")?.focus(); }
 function filterEmployeeDropdown() { let q = document.getElementById("employeeDropdownSearch")?.value.toLowerCase()||""; document.querySelectorAll("#employeeOptionsContainer .custom-option").forEach(opt=>{ opt.style.display = opt.innerText.toLowerCase().includes(q) ? "flex" : "none"; }); }
 
+function onCategoryChange() {
+    const cat = document.getElementById("assetCategory").value;
+    const specsGroup = document.getElementById("laptopSpecsGroup");
+    if(cat === "Laptop") {
+        specsGroup.classList.add("visible");
+    } else {
+        specsGroup.classList.remove("visible");
+        document.getElementById("assetSpecs").value = "";
+    }
+}
+
+// ── ASSET EXPORT ──────────────────────────────────────────────
+function exportAssetsExcel() {
+    const headers = ["Asset Tag","Serial Number","Category","Brand","Model","Specs (Laptop only)","Employee","Status"];
+    const rows = assets.map(a => [
+        a.tag || "",
+        a.serial || "",
+        a.category || "",
+        a.brand || "",
+        a.model || "",
+        a.specs || "",
+        a.employee || "",
+        a.status || "In Stock"
+    ]);
+    const wsData = [headers, ...rows];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols'] = headers.map(()=>({wch:20}));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Assets");
+    XLSX.writeFile(wb, "assets_export.xlsx");
+    showToast("Assets exported to Excel");
+}
+
+// ── ASSET IMPORT ──────────────────────────────────────────────
+function importAssetsExcel() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".xlsx,.xls";
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                const wb = XLSX.read(ev.target.result, {type:"binary"});
+                const ws = wb.Sheets[wb.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(ws, {header:1});
+                if(rows.length < 2) { showToast("No data rows found in file", true); return; }
+                const header = rows[0].map(h => String(h).trim().toLowerCase());
+                const tagIdx    = header.findIndex(h=>h.includes("asset tag"));
+                const serialIdx = header.findIndex(h=>h.includes("serial"));
+                const catIdx    = header.findIndex(h=>h.includes("category"));
+                const brandIdx  = header.findIndex(h=>h.includes("brand"));
+                const modelIdx  = header.findIndex(h=>h.includes("model"));
+                const specsIdx  = header.findIndex(h=>h.includes("specs"));
+                const empIdx    = header.findIndex(h=>h.includes("employee"));
+                const statIdx   = header.findIndex(h=>h.includes("status"));
+                if(tagIdx===-1||brandIdx===-1||modelIdx===-1) { showToast("Invalid file format. Use exported template.", true); return; }
+                let added=0, skipped=0;
+                let nextId = assets.length ? Math.max(...assets.map(a=>a.id))+1 : 1;
+                for(let i=1;i<rows.length;i++) {
+                    const r = rows[i];
+                    if(!r || r.length===0) continue;
+                    const tag   = String(r[tagIdx]||"").trim();
+                    const serial= String(r[serialIdx]!=null?r[serialIdx]:"").trim();
+                    const cat   = String(r[catIdx]||"").trim() || (categories[0]||"Laptop");
+                    const brand = String(r[brandIdx]||"").trim();
+                    const model = String(r[modelIdx]||"").trim();
+                    const specs = specsIdx>=0 ? String(r[specsIdx]||"").trim() : "";
+                    const emp   = String(r[empIdx]!=null?r[empIdx]:"").trim();
+                    let stat    = String(r[statIdx]||"In Stock").trim();
+                    if(!["In Stock","Assigned","Faulty"].includes(stat)) stat="In Stock";
+                    if(!tag||!brand||!model) { skipped++; continue; }
+                    if(serial && assets.some(a=>a.serial && a.serial===serial)) { skipped++; continue; }
+                    if(assets.some(a=>a.tag===tag)) { skipped++; continue; }
+                    assets.push({id:nextId++,tag,serial,category:cat,brand,model,specs,employee:emp,status:stat});
+                    added++;
+                }
+                if(added>0) { syncAssetsToFirebase(); showToast(`Imported ${added} asset(s)${skipped>0?`, ${skipped} skipped`:""}`); }
+                else { showToast(`No new assets imported. ${skipped} row(s) skipped (duplicate tag/serial or missing required fields).`, true); }
+            } catch(err) { showToast("Failed to read file: "+err.message, true); }
+        };
+        reader.readAsBinaryString(file);
+    };
+    input.click();
+}
+
+// ── EMPLOYEE EXPORT ───────────────────────────────────────────
+function exportEmployeesExcel() {
+    const headers = ["Name","Employee ID","Designation","Department"];
+    const rows = employees.map(e => [
+        e.name || "",
+        e.empId || "",
+        e.designation || "",
+        e.department || ""
+    ]);
+    const wsData = [headers, ...rows];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols'] = headers.map(()=>({wch:22}));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Employees");
+    XLSX.writeFile(wb, "employees_export.xlsx");
+    showToast("Employees exported to Excel");
+}
+
+// ── EMPLOYEE IMPORT ───────────────────────────────────────────
+function importEmployeesExcel() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".xlsx,.xls";
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                const wb = XLSX.read(ev.target.result, {type:"binary"});
+                const ws = wb.Sheets[wb.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(ws, {header:1});
+                if(rows.length < 2) { showToast("No data rows found in file", true); return; }
+                const header = rows[0].map(h => String(h).trim().toLowerCase());
+                const nameIdx  = header.findIndex(h=>h.includes("name"));
+                const empIdIdx = header.findIndex(h=>h.includes("employee id"));
+                const desigIdx = header.findIndex(h=>h.includes("designation"));
+                const deptIdx  = header.findIndex(h=>h.includes("department"));
+                if(nameIdx===-1||empIdIdx===-1) { showToast("Invalid file format. Use exported template.", true); return; }
+                let added=0, skipped=0;
+                let nextId = employees.length ? Math.max(...employees.map(e=>e.id))+1 : 1;
+                for(let i=1;i<rows.length;i++) {
+                    const r = rows[i];
+                    if(!r || r.length===0) continue;
+                    const name  = String(r[nameIdx]||"").trim();
+                    const empId = String(r[empIdIdx]!=null?r[empIdIdx]:"").trim();
+                    const desig = desigIdx>=0 ? String(r[desigIdx]||"").trim() : "";
+                    const dept  = deptIdx>=0  ? String(r[deptIdx]||"").trim()  : (departments[0]||"IT");
+                    if(!name||!empId) { skipped++; continue; }
+                    if(employees.some(e=>e.empId===empId)) { skipped++; continue; }
+                    employees.push({id:nextId++,name,empId,designation:desig,department:dept});
+                    added++;
+                }
+                if(added>0) { syncEmployeesToFirebase(); showToast(`Imported ${added} employee(s)${skipped>0?`, ${skipped} skipped`:""}`); }
+                else { showToast(`No new employees imported. ${skipped} row(s) skipped.`, true); }
+            } catch(err) { showToast("Failed to read file: "+err.message, true); }
+        };
+        reader.readAsBinaryString(file);
+    };
+    input.click();
+}
+
 async function init() { 
     await initDefaultData(); 
     loadCategoriesFromFirebase(); 
     loadDepartmentsFromFirebase();
     attachRealtimeListeners(); 
     document.querySelectorAll('.nav-item').forEach(i=>i.addEventListener('click',()=>showPage(i.getAttribute('data-page')))); 
-    document.getElementById("addAssetBtn")?.addEventListener('click',()=>{ editingAssetId=null; document.getElementById("assetModalTitle").innerText="Add Asset"; document.getElementById("assetId").value=""; document.getElementById("assetTag").value=""; document.getElementById("assetSerial").value=""; refreshCategorySelectors(); document.getElementById("assetBrand").value=""; document.getElementById("assetModel").value=""; document.getElementById("assetStatus").value="In Stock"; document.getElementById("assetEmployee").value=""; document.getElementById("selectedEmployeeDisplay").innerHTML=`Select Employee... <i class="fas fa-chevron-down"></i>`; populateEmployeeDropdown(""); document.getElementById("assetModal").classList.add("open"); }); 
+    document.getElementById("addAssetBtn")?.addEventListener('click',()=>{ editingAssetId=null; document.getElementById("assetModalTitle").innerText="Add Asset"; document.getElementById("assetId").value=""; document.getElementById("assetTag").value=""; document.getElementById("assetSerial").value=""; refreshCategorySelectors(); document.getElementById("assetCategory").value=categories[0]||"Laptop"; onCategoryChange(); document.getElementById("assetSpecs").value=""; document.getElementById("assetBrand").value=""; document.getElementById("assetModel").value=""; document.getElementById("assetStatus").value="In Stock"; document.getElementById("assetEmployee").value=""; document.getElementById("selectedEmployeeDisplay").innerHTML=`Select Employee... <i class="fas fa-chevron-down"></i>`; populateEmployeeDropdown(""); document.getElementById("assetModal").classList.add("open"); }); 
     document.getElementById("addEmployeeBtn")?.addEventListener('click',()=>{ editingEmployeeId=null; document.getElementById("employeeModalTitle").innerText="Add Employee"; document.getElementById("employeeId").value=""; document.getElementById("empName").value=""; document.getElementById("empId").value=""; document.getElementById("empDesignation").value=""; refreshDepartmentSelectors(); document.getElementById("empDept").value=departments[0] || "IT"; document.getElementById("employeeModal").classList.add("open"); }); 
     document.getElementById("saveAssetBtn")?.addEventListener('click',saveAsset); 
     document.getElementById("saveEmployeeBtn")?.addEventListener('click',saveEmployee); 
@@ -1615,6 +1820,10 @@ async function init() {
     document.getElementById("manageDeptsBtn")?.addEventListener('click',openDepartmentModal);
     document.getElementById("addDeptBtn")?.addEventListener('click',addNewDepartment);
     document.getElementById("exportLogsBtn")?.addEventListener('click',()=>{ let csv="Asset Tag,Serial Number,Category,Brand,Model,Issue Description,Resolution,Issue Date,Repaired Date,Technician\n"+repairedLogs.map(l=>`${l.assetTag},${l.serial},${l.category},${l.brand},${l.model},${l.issueDesc},${l.resolution},${l.issueDate},${l.repairedDate},${l.technician}`).join("\n"); let a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="repaired_logs.csv"; a.click(); showToast("Exported"); }); 
+    document.getElementById("exportAssetsBtn")?.addEventListener('click', exportAssetsExcel);
+    document.getElementById("importAssetsBtn")?.addEventListener('click', importAssetsExcel);
+    document.getElementById("exportEmployeesBtn")?.addEventListener('click', exportEmployeesExcel);
+    document.getElementById("importEmployeesBtn")?.addEventListener('click', importEmployeesExcel);
     document.getElementById("menuToggle")?.addEventListener('click',()=>document.getElementById("sidebar").classList.toggle("open")); 
     document.getElementById("currentDate").innerText=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); 
     document.addEventListener('click', function(e) { if(!e.target.closest('.custom-select-container')) { document.getElementById("employeeDropdownList")?.classList.remove("show"); document.getElementById("selectedEmployeeDisplay")?.classList.remove("active"); } }); 
@@ -1624,4 +1833,3 @@ init();
 </script>
 </body>
 </html>
-```
