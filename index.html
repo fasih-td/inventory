@@ -6,10 +6,6 @@
 <title>Inventory & Asset Managment System</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<script>
-// Runs synchronously before DOM paints — stamps class so CSS hides login instantly
-(function(){if(sessionStorage.getItem('it_inventory_auth')==='true'){document.documentElement.classList.add('is-authed');}})();
-</script>
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -28,11 +24,6 @@ body {
     color: #0f172a;
     min-height: 100vh;
 }
-
-/* ── Auth flash prevention ─────────────────────────────────── */
-/* Applied instantly from <head> script before DOM paints */
-html.is-authed #loginScreen { display: none !important; }
-html.is-authed #mainApp    { display: flex !important; }
 
 /* Login Screen */
 .login-wrapper {
@@ -1223,6 +1214,132 @@ tr:hover td {
     background: #dcfce7;
     border-color: #4ade80;
 }
+/* ── Vendor Badge & Popup ───────────────────────────────────── */
+.vendor-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+    border: 1px solid #c7d9fc;
+    border-radius: 30px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #3b82f6;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.vendor-badge:hover {
+    background: linear-gradient(135deg, #dbeafe, #ede9fe);
+    border-color: #93c5fd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px -3px rgba(59,130,246,0.25);
+}
+.vendor-badge i { font-size: 0.65rem; opacity: 0.75; }
+
+/* Vendor detail popup */
+.vendor-popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,18,40,0.55);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    z-index: 400;
+}
+.vendor-popup-overlay.open { display: flex; }
+.vendor-popup {
+    background: white;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 32px 64px -12px rgba(0,0,0,0.3);
+    animation: modalPop 0.22s cubic-bezier(0.34,1.2,0.64,1);
+    overflow: hidden;
+}
+.vendor-popup-header {
+    background: linear-gradient(135deg, #141c2f, #1e2d4a);
+    padding: 22px 24px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.vendor-popup-header h4 {
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.vendor-popup-header h4 i {
+    width: 32px; height: 32px;
+    background: linear-gradient(145deg, #3b82f6, #6366f1);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+}
+.vendor-popup-close {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.vendor-popup-close:hover { background: rgba(255,255,255,0.18); color: white; }
+.vendor-popup-body { padding: 22px 24px 26px; }
+.vendor-detail-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+.vendor-detail-row:last-child { border-bottom: none; }
+.vendor-detail-icon {
+    width: 36px; height: 36px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #dbeafe, #e0e7ff);
+    display: flex; align-items: center; justify-content: center;
+    color: #3b82f6;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+.vendor-detail-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    margin-bottom: 2px;
+}
+.vendor-detail-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+/* Cost badge */
+.cost-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #059669;
+    background: #ecfdf5;
+    border: 1px solid #d1fae5;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
 .btn-export {
     background: #eff6ff;
     border: 1px solid #93c5fd;
@@ -1338,7 +1455,7 @@ tr:hover td {
             <!-- Assets Page - Fixed: removed Chinese characters (changed the table header) -->
             <div id="assetsPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-list"></i> All Assets</div><div class="panel-actions"><button class="btn-import" id="importAssetsBtn"><i class="fas fa-file-upload"></i> Import Excel</button><button class="btn-export" id="exportAssetsBtn"><i class="fas fa-file-download"></i> Export Excel</button><button class="btn-primary" id="addAssetBtn"><i class="fas fa-plus"></i> Add Asset</button></div></div>
-                <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="assetSearch" placeholder="Search by tag, serial, brand, employee..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="categoryFilterAssets"><option value="">All Categories</option></select><div class="manager-chip" id="manageCategoriesBtn"><i class="fas fa-edit"></i> Manage</div></div><select class="filter-select" id="statusFilterAssets"><option value="">All Status</option><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div>
+                <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="assetSearch" placeholder="Search by tag, serial, brand..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="categoryFilterAssets"><option value="">All Categories</option></select><div class="manager-chip" id="manageCategoriesBtn"><i class="fas fa-edit"></i> Manage</div></div><select class="filter-select" id="statusFilterAssets"><option value="">All Status</option><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div>
                 <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Status</th><th>Actions</th></tr></thead><tbody id="assetsTableBody"></tbody></table></div></div>
             </div>
 
@@ -1360,7 +1477,7 @@ tr:hover td {
             <div id="repairedPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-history"></i> Repaired Items Log</div><button class="btn-secondary" id="exportLogsBtn"><i class="fas fa-download"></i> Export Logs</button></div>
                 <div style="padding: 0 20px 16px 20px;"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="repairedSearch" placeholder="Search logs..."></div></div>
-                <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Issue Description</th><th>Resolution</th><th>Issue Date</th><th>Repaired Date</th><th>Technician</th></tr></thead><tbody id="repairedTableBody"></tbody></table></div></div>
+                <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Issue Description</th><th>Resolution</th><th>Issue Date</th><th>Sent for Repair</th><th>Received Back</th><th>Vendor</th><th>Cost</th><th>Actions</th></tr></thead><tbody id="repairedTableBody"></tbody></table></div></div>
             </div>
         </div>
     </main>
@@ -1398,7 +1515,46 @@ tr:hover td {
 <div id="employeeModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="employeeModalTitle">Add Employee</h3><button class="close-modal" onclick="closeEmployeeModal()">×</button></div><div class="modal-body"><input type="hidden" id="employeeId"><div class="form-group"><label>Full Name</label><input id="empName"></div><div class="form-group"><label>Employee ID</label><input id="empId"></div><div class="form-group"><label>Designation</label><input id="empDesignation"></div><div class="form-group"><label>Department</label><select id="empDept"></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeEmployeeModal()">Cancel</button><button class="btn-primary" id="saveEmployeeBtn">Save</button></div></div></div>
 
 <!-- Repair Modal -->
-<div id="repairModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3>Mark as Repaired</h3><button class="close-modal" onclick="closeRepairModal()">×</button></div><div class="modal-body"><input type="hidden" id="repairAssetId"><div class="form-group"><label>Issue Description</label><textarea id="repairIssueDesc" placeholder="Describe the issue..."></textarea></div><div class="form-group"><label>Resolution / Fix Applied</label><textarea id="repairResolution" placeholder="What was done to fix it..."></textarea></div><div class="form-group"><label>Technician Name</label><input id="repairTechnician" placeholder="Who performed the repair"></div><div class="form-group"><label>Repaired Date</label><input type="date" id="repairDate"></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeRepairModal()">Cancel</button><button class="btn-primary" id="confirmRepairBtn">Complete Repair</button></div></div></div>
+<div id="repairModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="repairModalTitle">Mark as Repaired</h3><button class="close-modal" onclick="closeRepairModal()">×</button></div><div class="modal-body"><input type="hidden" id="repairAssetId"><input type="hidden" id="repairLogId">
+<div class="form-group"><label>Issue Description</label><textarea id="repairIssueDesc" placeholder="Describe the issue..."></textarea></div>
+<div class="form-group"><label>Resolution / Fix Applied</label><textarea id="repairResolution" placeholder="What was done to fix it..."></textarea></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="form-group"><label>Issue Date</label><input type="date" id="repairIssueDate"></div>
+    <div class="form-group"><label>Sent for Repair</label><input type="date" id="repairSentDate"></div>
+</div>
+<div class="form-group"><label>Received Back</label><input type="date" id="repairDate"></div>
+<div style="background:#f8fbff;border:1px solid #e8eef8;border-radius:20px;padding:18px 20px;margin-bottom:20px;">
+    <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#3b82f6;margin-bottom:14px;display:flex;align-items:center;gap:6px;"><i class="fas fa-store"></i> Vendor Details</div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Vendor / Contact Name</label><input id="repairVendorName" placeholder="e.g., Ali Hassan"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Shop Name</label><input id="repairVendorShop" placeholder="e.g., Tech Fix Solutions"></div>
+    <div class="form-group" style="margin-bottom:0;"><label>Phone Number</label><input id="repairVendorPhone" placeholder="e.g., +92 300 1234567"></div>
+</div>
+<div class="form-group"><label>Repair Cost <span style="color:#94a3b8;font-size:0.65rem;font-weight:500;text-transform:none;">(optional)</span></label><input id="repairCost" type="number" min="0" placeholder="e.g., 2500"></div>
+</div><div class="modal-footer"><button class="btn-secondary" onclick="closeRepairModal()">Cancel</button><button class="btn-primary" id="confirmRepairBtn">Save</button></div></div></div>
+
+<!-- Vendor Detail Popup -->
+<div id="vendorPopup" class="vendor-popup-overlay">
+    <div class="vendor-popup">
+        <div class="vendor-popup-header">
+            <h4><i class="fas fa-store"></i> <span id="vpShopName">—</span></h4>
+            <button class="vendor-popup-close" onclick="closeVendorPopup()">×</button>
+        </div>
+        <div class="vendor-popup-body">
+            <div class="vendor-detail-row">
+                <div class="vendor-detail-icon"><i class="fas fa-user"></i></div>
+                <div><div class="vendor-detail-label">Contact Person</div><div class="vendor-detail-value" id="vpVendorName">—</div></div>
+            </div>
+            <div class="vendor-detail-row">
+                <div class="vendor-detail-icon"><i class="fas fa-store-alt"></i></div>
+                <div><div class="vendor-detail-label">Shop Name</div><div class="vendor-detail-value" id="vpShopNameRow">—</div></div>
+            </div>
+            <div class="vendor-detail-row">
+                <div class="vendor-detail-icon"><i class="fas fa-phone-alt"></i></div>
+                <div><div class="vendor-detail-label">Phone Number</div><div class="vendor-detail-value" id="vpPhone">—</div></div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 // FIREBASE CONFIGURATION (unchanged)
@@ -1553,6 +1709,9 @@ async function initDefaultData() {
 async function syncAssetsToFirebase() { const obj={}; assets.forEach(a=>obj[a.id]=a); await db.ref('assets').set(obj); }
 async function syncEmployeesToFirebase() { const obj={}; employees.forEach(e=>obj[e.id]=e); await db.ref('employees').set(obj); }
 async function syncRepairedLogsToFirebase() { const obj={}; repairedLogs.forEach(l=>obj[l.id]=l); await db.ref('repairedLogs').set(obj); }
+window.editRepairLog = editRepairLog;
+window.openVendorPopup = openVendorPopup;
+window.closeVendorPopup = closeVendorPopup;
 
 function updateCounters() { 
     document.getElementById("totalAssetsStat").innerText = assets.length;
@@ -1575,7 +1734,7 @@ function renderAssets() {
     let s = document.getElementById("assetSearch")?.value.toLowerCase()||"", 
         cat = document.getElementById("categoryFilterAssets")?.value||"", 
         stat = document.getElementById("statusFilterAssets")?.value||""; 
-    let f = assets.filter(a=> (a.tag.toLowerCase().includes(s)||a.serial?.toLowerCase().includes(s)||a.brand.toLowerCase().includes(s)||a.employee?.toLowerCase().includes(s)) && (cat===""||a.category===cat) && (stat===""||a.status===stat)); 
+    let f = assets.filter(a=> (a.tag.toLowerCase().includes(s)||a.serial?.toLowerCase().includes(s)||a.brand.toLowerCase().includes(s)) && (cat===""||a.category===cat) && (stat===""||a.status===stat)); 
     let tbody = document.getElementById("assetsTableBody"); 
     if(!tbody) return; 
     if(f.length===0) { tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><i class="fas fa-database"></i><p>No assets</p></div></td></tr>`; return; } 
@@ -1629,11 +1788,18 @@ function renderFaulty() {
 
 function renderRepairedLogs() { 
     let s = document.getElementById("repairedSearch")?.value.toLowerCase()||""; 
-    let f = repairedLogs.filter(l=>l.assetTag.toLowerCase().includes(s)||l.serial?.toLowerCase().includes(s)||l.issueDesc?.toLowerCase().includes(s)||l.technician?.toLowerCase().includes(s)); 
+    let f = repairedLogs.filter(l=>l.assetTag.toLowerCase().includes(s)||l.serial?.toLowerCase().includes(s)||l.issueDesc?.toLowerCase().includes(s)||l.vendorShop?.toLowerCase().includes(s)||l.vendorName?.toLowerCase().includes(s)); 
     let tb = document.getElementById("repairedTableBody"); 
     if(!tb) return; 
-    if(f.length===0) { tb.innerHTML=`<tr><td colspan="11"><div class="empty-state"><i class="fas fa-clipboard-list"></i><p>No repair logs found</p></div></td></tr>`; return; } 
-    tb.innerHTML = f.map((l,i)=>`<tr>
+    if(f.length===0) { tb.innerHTML=`<tr><td colspan="14"><div class="empty-state"><i class="fas fa-clipboard-list"></i><p>No repair logs found</p></div></td></tr>`; return; } 
+    tb.innerHTML = f.map((l,i)=>{
+        const vendorCell = (l.vendorShop||l.vendorName)
+            ? `<span class="vendor-badge" onclick="openVendorPopup(${l.id})"><i class="fas fa-store"></i>${l.vendorShop||l.vendorName}</span>`
+            : `<span style="color:#94a3b8;">—</span>`;
+        const costCell = l.cost
+            ? `<span class="cost-badge"><i class="fas fa-tag" style="font-size:0.6rem;"></i> Rs. ${Number(l.cost).toLocaleString()}</span>`
+            : `<span style="color:#94a3b8;">—</span>`;
+        return `<tr>
         <td style="color:#94a3b8;">${String(i+1).padStart(2,'0')}</td>
         <td><strong>${l.assetTag}</strong></td>
         <td><span class="serial-highlight">${l.serial || "—"}</span></td>
@@ -1643,9 +1809,12 @@ function renderRepairedLogs() {
         <td>${l.issueDesc || "—"}</td>
         <td>${l.resolution || "—"}</td>
         <td>${l.issueDate || "—"}</td>
-        <td>${l.repairedDate || "—"}</td>
-        <td><span class="badge badge-blue">${l.technician || "—"}</span></td>
-    </tr>`).join(''); 
+        <td>${l.sentDate || "—"}</td>
+        <td>${l.receivedDate||l.repairedDate || "—"}</td>
+        <td>${vendorCell}</td>
+        <td>${costCell}</td>
+        <td class="action-icons"><i class="fas fa-edit" onclick="editRepairLog(${l.id})" title="Edit log"></i></td>
+    </tr>`; }).join(''); 
 }
 
 function renderChart() { 
@@ -1723,21 +1892,92 @@ function saveEmployee() {
 
 function openRepairModal(assetId) { 
     let a=assets.find(x=>x.id===assetId); 
-    if(a){ pendingRepairAsset=a; document.getElementById("repairAssetId").value=a.id; document.getElementById("repairIssueDesc").value=""; document.getElementById("repairResolution").value=""; document.getElementById("repairTechnician").value=""; document.getElementById("repairDate").value=new Date().toISOString().slice(0,10); document.getElementById("repairModal").classList.add("open"); } 
+    if(a){ 
+        pendingRepairAsset=a; 
+        document.getElementById("repairModalTitle").innerText="Mark as Repaired";
+        document.getElementById("repairAssetId").value=a.id; 
+        document.getElementById("repairLogId").value="";
+        document.getElementById("repairIssueDesc").value=""; 
+        document.getElementById("repairResolution").value=""; 
+        document.getElementById("repairVendorName").value="";
+        document.getElementById("repairVendorShop").value="";
+        document.getElementById("repairVendorPhone").value="";
+        document.getElementById("repairCost").value="";
+        const today=new Date().toISOString().slice(0,10);
+        document.getElementById("repairIssueDate").value=today;
+        document.getElementById("repairSentDate").value=today;
+        document.getElementById("repairDate").value=today; 
+        document.getElementById("confirmRepairBtn").innerText="Complete Repair";
+        document.getElementById("repairModal").classList.add("open"); 
+    } 
+}
+
+function editRepairLog(logId) {
+    let l=repairedLogs.find(x=>x.id===logId);
+    if(!l) return;
+    pendingRepairAsset=null;
+    document.getElementById("repairModalTitle").innerText="Edit Repair Log";
+    document.getElementById("repairAssetId").value="";
+    document.getElementById("repairLogId").value=l.id;
+    document.getElementById("repairIssueDesc").value=l.issueDesc||"";
+    document.getElementById("repairResolution").value=l.resolution||"";
+    document.getElementById("repairIssueDate").value=l.issueDate||"";
+    document.getElementById("repairSentDate").value=l.sentDate||"";
+    document.getElementById("repairDate").value=l.receivedDate||l.repairedDate||"";
+    document.getElementById("repairVendorName").value=l.vendorName||"";
+    document.getElementById("repairVendorShop").value=l.vendorShop||"";
+    document.getElementById("repairVendorPhone").value=l.vendorPhone||"";
+    document.getElementById("repairCost").value=l.cost||"";
+    document.getElementById("confirmRepairBtn").innerText="Save Changes";
+    document.getElementById("repairModal").classList.add("open");
 }
 
 function completeRepair() { 
-    if(!pendingRepairAsset) return; 
-    let issue=document.getElementById("repairIssueDesc").value.trim(), res=document.getElementById("repairResolution").value.trim(), tech=document.getElementById("repairTechnician").value.trim(), rdate=document.getElementById("repairDate").value; 
-    if(!issue||!res||!tech){ showToast("Fill all repair details",true); return; } 
+    const logId = document.getElementById("repairLogId").value;
+    let issue=document.getElementById("repairIssueDesc").value.trim(), 
+        res=document.getElementById("repairResolution").value.trim(), 
+        issueDate=document.getElementById("repairIssueDate").value,
+        sentDate=document.getElementById("repairSentDate").value,
+        rdate=document.getElementById("repairDate").value,
+        vendorName=document.getElementById("repairVendorName").value.trim(),
+        vendorShop=document.getElementById("repairVendorShop").value.trim(),
+        vendorPhone=document.getElementById("repairVendorPhone").value.trim(),
+        cost=document.getElementById("repairCost").value.trim();
+    if(!issue||!res){ showToast("Issue description and resolution are required",true); return; }
+
+    // Editing existing log
+    if(logId) {
+        let idx=repairedLogs.findIndex(l=>l.id==logId);
+        if(idx!==-1){
+            repairedLogs[idx]={...repairedLogs[idx],issueDesc:issue,resolution:res,issueDate,sentDate,receivedDate:rdate,vendorName,vendorShop,vendorPhone,cost};
+            syncRepairedLogsToFirebase(); closeRepairModal(); showToast("Log updated");
+        }
+        return;
+    }
+
+    // New repair log from Faulty page
+    if(!pendingRepairAsset) return;
     let nextId=repairedLogs.length?Math.max(...repairedLogs.map(l=>l.id))+1:1; 
-    repairedLogs.push({ id:nextId, assetTag:pendingRepairAsset.tag, serial:pendingRepairAsset.serial, category:pendingRepairAsset.category, brand:pendingRepairAsset.brand, model:pendingRepairAsset.model, issueDesc:issue, resolution:res, issueDate:new Date().toISOString().slice(0,10), repairedDate:rdate, technician:tech }); 
-    syncRepairedLogsToFirebase(); pendingRepairAsset.status="In Stock"; pendingRepairAsset.employee=""; syncAssetsToFirebase(); closeRepairModal(); showToast("Repair completed and logged"); 
+    repairedLogs.push({ id:nextId, assetTag:pendingRepairAsset.tag, serial:pendingRepairAsset.serial, category:pendingRepairAsset.category, brand:pendingRepairAsset.brand, model:pendingRepairAsset.model, issueDesc:issue, resolution:res, issueDate, sentDate, receivedDate:rdate, vendorName, vendorShop, vendorPhone, cost }); 
+    syncRepairedLogsToFirebase(); 
+    pendingRepairAsset.status="In Stock"; pendingRepairAsset.employee=""; 
+    syncAssetsToFirebase(); closeRepairModal(); showToast("Repair completed and logged"); 
 }
 
+function openVendorPopup(logId) {
+    let l=repairedLogs.find(x=>x.id===logId);
+    if(!l) return;
+    document.getElementById("vpShopName").innerText=l.vendorShop||"—";
+    document.getElementById("vpVendorName").innerText=l.vendorName||"—";
+    document.getElementById("vpShopNameRow").innerText=l.vendorShop||"—";
+    document.getElementById("vpPhone").innerText=l.vendorPhone||"—";
+    document.getElementById("vendorPopup").classList.add("open");
+}
+function closeVendorPopup() { document.getElementById("vendorPopup").classList.remove("open"); }
+
+function closeRepairModal() { document.getElementById("repairModal").classList.remove("open"); pendingRepairAsset=null; }
 function closeAssetModal() { document.getElementById("assetModal").classList.remove("open"); editingAssetId=null; }
 function closeEmployeeModal() { document.getElementById("employeeModal").classList.remove("open"); editingEmployeeId=null; }
-function closeRepairModal() { document.getElementById("repairModal").classList.remove("open"); pendingRepairAsset=null; }
 
 function showPage(p) { 
     document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active-page')); 
@@ -2015,13 +2255,14 @@ async function init() {
     document.getElementById("addCategoryBtn")?.addEventListener('click',addNewCategory); 
     document.getElementById("manageDeptsBtn")?.addEventListener('click',openDepartmentModal);
     document.getElementById("addDeptBtn")?.addEventListener('click',addNewDepartment);
-    document.getElementById("exportLogsBtn")?.addEventListener('click',()=>{ let csv="Asset Tag,Serial Number,Category,Brand,Model,Issue Description,Resolution,Issue Date,Repaired Date,Technician\n"+repairedLogs.map(l=>`${l.assetTag},${l.serial},${l.category},${l.brand},${l.model},${l.issueDesc},${l.resolution},${l.issueDate},${l.repairedDate},${l.technician}`).join("\n"); let a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="repaired_logs.csv"; a.click(); showToast("Exported"); }); 
+    document.getElementById("exportLogsBtn")?.addEventListener('click',()=>{ let csv="Asset Tag,Serial Number,Category,Brand,Model,Issue Description,Resolution,Issue Date,Sent for Repair,Received Back,Vendor Name,Shop Name,Phone,Cost\n"+repairedLogs.map(l=>`${l.assetTag},${l.serial},${l.category},${l.brand},${l.model},${l.issueDesc},${l.resolution},${l.issueDate},${l.sentDate||""},${l.receivedDate||l.repairedDate||""},${l.vendorName||""},${l.vendorShop||""},${l.vendorPhone||""},${l.cost||""}`).join("\n"); let a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="repaired_logs.csv"; a.click(); showToast("Exported"); }); 
     document.getElementById("exportAssetsBtn")?.addEventListener('click', exportAssetsExcel);
     document.getElementById("importAssetsBtn")?.addEventListener('click', importAssetsExcel);
     document.getElementById("exportEmployeesBtn")?.addEventListener('click', exportEmployeesExcel);
     document.getElementById("importEmployeesBtn")?.addEventListener('click', importEmployeesExcel);
     document.getElementById("menuToggle")?.addEventListener('click',()=>document.getElementById("sidebar").classList.toggle("open")); 
     document.getElementById("currentDate").innerText=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); 
+    document.getElementById("vendorPopup")?.addEventListener('click',function(e){ if(e.target===this) closeVendorPopup(); });
     document.addEventListener('click', function(e) { 
         if(!e.target.closest('.custom-select-container')) { document.getElementById("employeeDropdownList")?.classList.remove("show"); document.getElementById("selectedEmployeeDisplay")?.classList.remove("active"); }
         if(!e.target.closest('.cs-wrapper')) { document.querySelectorAll('.cs-dropdown.cs-open').forEach(function(d){ d.classList.remove('cs-open'); const tid = 'cst-' + d.id.replace('csd-',''); document.getElementById(tid)?.classList.remove('cs-active'); }); }
