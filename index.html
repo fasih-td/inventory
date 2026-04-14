@@ -1455,7 +1455,7 @@ tr:hover td {
             <!-- Assets Page - Fixed: removed Chinese characters (changed the table header) -->
             <div id="assetsPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-list"></i> All Assets</div><div class="panel-actions"><button class="btn-import" id="importAssetsBtn"><i class="fas fa-file-upload"></i> Import Excel</button><button class="btn-export" id="exportAssetsBtn"><i class="fas fa-file-download"></i> Export Excel</button><button class="btn-primary" id="addAssetBtn"><i class="fas fa-plus"></i> Add Asset</button></div></div>
-                <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="assetSearch" placeholder="Search by tag, serial, brand..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="categoryFilterAssets"><option value="">All Categories</option></select><div class="manager-chip" id="manageCategoriesBtn"><i class="fas fa-edit"></i> Manage</div></div><select class="filter-select" id="statusFilterAssets"><option value="">All Status</option><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div>
+                <div style="padding: 0 20px 16px 20px;"><div class="search-bar"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="assetSearch" placeholder="Search by tag, serial, brand, employee..."></div><div style="display: flex; align-items: center; gap: 8px;"><select class="filter-select" id="categoryFilterAssets"><option value="">All Categories</option></select><div class="manager-chip" id="manageCategoriesBtn"><i class="fas fa-edit"></i> Manage</div></div><select class="filter-select" id="statusFilterAssets"><option value="">All Status</option><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div>
                 <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Status</th><th>Actions</th></tr></thead><tbody id="assetsTableBody"></tbody></table></div></div>
             </div>
 
@@ -1734,7 +1734,7 @@ function renderAssets() {
     let s = document.getElementById("assetSearch")?.value.toLowerCase()||"", 
         cat = document.getElementById("categoryFilterAssets")?.value||"", 
         stat = document.getElementById("statusFilterAssets")?.value||""; 
-    let f = assets.filter(a=> (a.tag.toLowerCase().includes(s)||a.serial?.toLowerCase().includes(s)||a.brand.toLowerCase().includes(s)) && (cat===""||a.category===cat) && (stat===""||a.status===stat)); 
+    let f = assets.filter(a=> (a.tag.toLowerCase().includes(s)||a.serial?.toLowerCase().includes(s)||a.brand.toLowerCase().includes(s)||a.employee?.toLowerCase().includes(s)) && (cat===""||a.category===cat) && (stat===""||a.status===stat)); 
     let tbody = document.getElementById("assetsTableBody"); 
     if(!tbody) return; 
     if(f.length===0) { tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><i class="fas fa-database"></i><p>No assets</p></div></td></tr>`; return; } 
@@ -2268,8 +2268,8 @@ async function init() {
         if(!e.target.closest('.cs-wrapper')) { document.querySelectorAll('.cs-dropdown.cs-open').forEach(function(d){ d.classList.remove('cs-open'); const tid = 'cst-' + d.id.replace('csd-',''); document.getElementById(tid)?.classList.remove('cs-active'); }); }
     }); 
     initAllCustomSelects();
-    checkAuth(); 
 }
+checkAuth();
 init();
 </script>
 </body>
