@@ -1470,7 +1470,7 @@ tr:hover td {
             <div id="faultyPage" class="page">
                 <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-tools"></i> Faulty Equipment</div></div>
                 <div style="padding: 0 20px 16px 20px;"><div class="search-input"><i class="fas fa-search"></i><input type="text" id="faultySearch" placeholder="Search faulty items..."></div></div>
-                <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Employee</th><th>Status</th><th>Actions</th></tr></thead><tbody id="faultyTableBody"></tbody></table></div></div>
+                <div class="table-wrapper"><table><thead><tr><th>#</th><th>Asset Tag</th><th>Serial Number</th><th>Category</th><th>Brand</th><th>Model</th><th>Issue Description</th><th>Status</th><th>Actions</th></tr></thead><tbody id="faultyTableBody"></tbody></table></div></div>
             </div>
 
             <!-- Repaired Page -->
@@ -1509,7 +1509,7 @@ tr:hover td {
 </div>
 
 <!-- Asset Modal -->
-<div id="assetModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="assetModalTitle">Add Asset</h3><button class="close-modal" onclick="closeAssetModal()">×</button></div><div class="modal-body"><input type="hidden" id="assetId"><div class="form-group"><label>Asset Tag <span class="required">*</span></label><input id="assetTag" placeholder="e.g., IT-LAP-001"></div><div class="form-group"><label>Serial Number <span style="color:#94a3b8;font-size:0.65rem;font-weight:500;text-transform:none;">(optional)</span></label><input id="assetSerial" placeholder="Leave blank if not available"></div><div class="form-group"><label>Category <span class="required">*</span></label><select id="assetCategory" onchange="onCategoryChange()"></select></div><div class="form-group" id="laptopSpecsGroup"><label>Laptop Specs</label><textarea id="assetSpecs" placeholder="e.g., Intel i7, 16GB RAM, 512GB SSD, Windows 11" style="border-radius:16px;min-height:70px;"></textarea></div><div class="form-group"><label>Brand <span class="required">*</span></label><input id="assetBrand" placeholder="e.g., Dell, HP"></div><div class="form-group"><label>Model <span class="required">*</span></label><input id="assetModel" placeholder="e.g., Latitude 5440"></div><div class="form-group"><label>Employee (optional)</label><div class="custom-select-container"><div class="custom-select-header" id="selectedEmployeeDisplay" onclick="toggleEmployeeDropdown()">Select Employee... <i class="fas fa-chevron-down"></i></div><div class="custom-select-dropdown" id="employeeDropdownList"><div class="custom-select-search"><input type="text" id="employeeDropdownSearch" placeholder="Search..." oninput="filterEmployeeDropdown()"></div><div class="custom-select-options" id="employeeOptionsContainer"></div></div></div><input type="hidden" id="assetEmployee"></div><div class="form-group"><label>Status</label><select id="assetStatus"><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeAssetModal()">Cancel</button><button class="btn-primary" id="saveAssetBtn">Save</button></div></div></div>
+<div id="assetModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="assetModalTitle">Add Asset</h3><button class="close-modal" onclick="closeAssetModal()">×</button></div><div class="modal-body"><input type="hidden" id="assetId"><div class="form-group"><label>Asset Tag <span class="required">*</span></label><input id="assetTag" placeholder="e.g., IT-LAP-001"></div><div class="form-group"><label>Serial Number <span style="color:#94a3b8;font-size:0.65rem;font-weight:500;text-transform:none;">(optional)</span></label><input id="assetSerial" placeholder="Leave blank if not available"></div><div class="form-group"><label>Category <span class="required">*</span></label><select id="assetCategory" onchange="onCategoryChange()"></select></div><div class="form-group" id="laptopSpecsGroup"><label>Laptop Specs</label><textarea id="assetSpecs" placeholder="e.g., Intel i7, 16GB RAM, 512GB SSD, Windows 11" style="border-radius:16px;min-height:70px;"></textarea></div><div class="form-group"><label>Brand <span class="required">*</span></label><input id="assetBrand" placeholder="e.g., Dell, HP"></div><div class="form-group"><label>Model <span class="required">*</span></label><input id="assetModel" placeholder="e.g., Latitude 5440"></div><div class="form-group"><label>Employee (optional)</label><div class="custom-select-container"><div class="custom-select-header" id="selectedEmployeeDisplay" onclick="toggleEmployeeDropdown()">Select Employee... <i class="fas fa-chevron-down"></i></div><div class="custom-select-dropdown" id="employeeDropdownList"><div class="custom-select-search"><input type="text" id="employeeDropdownSearch" placeholder="Search..." oninput="filterEmployeeDropdown()"></div><div class="custom-select-options" id="employeeOptionsContainer"></div></div></div><input type="hidden" id="assetEmployee"></div><div class="form-group"><label>Status</label><select id="assetStatus" onchange="toggleIssueDesc()"><option>In Stock</option><option>Assigned</option><option>Faulty</option></select></div><div class="form-group" id="issueDescGroup" style="display:none;"><label>Issue Description <span class="required">*</span></label><textarea id="assetIssueDesc" placeholder="e.g., Keyboard not working, screen flickering, battery not charging..." style="border-radius:16px;min-height:80px;"></textarea></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeAssetModal()">Cancel</button><button class="btn-primary" id="saveAssetBtn">Save</button></div></div></div>
 
 <!-- Employee Modal -->
 <div id="employeeModal" class="modal-overlay"><div class="modal"><div class="modal-header"><h3 id="employeeModalTitle">Add Employee</h3><button class="close-modal" onclick="closeEmployeeModal()">×</button></div><div class="modal-body"><input type="hidden" id="employeeId"><div class="form-group"><label>Full Name</label><input id="empName"></div><div class="form-group"><label>Employee ID</label><input id="empId"></div><div class="form-group"><label>Designation</label><input id="empDesignation"></div><div class="form-group"><label>Department</label><select id="empDept"></select></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeEmployeeModal()">Cancel</button><button class="btn-primary" id="saveEmployeeBtn">Save</button></div></div></div>
@@ -1780,7 +1780,7 @@ function renderFaulty() {
         <td>${a.category}</td>
         <td>${a.brand}</td>
         <td>${a.model}</td>
-        <td>${a.employee||"—"}</td>
+        <td>${a.issueDesc||"—"}</td>
         <td><span class="badge badge-red">Needs Repair</span></td>
         <td><button class="btn-outline" onclick="openRepairModal(${a.id})"><i class="fas fa-wrench"></i> Mark Repaired</button></td>
     </tr>`).join(''); 
@@ -1841,6 +1841,8 @@ function editAsset(id) {
         document.getElementById("assetModel").value=a.model; 
         document.getElementById("assetStatus").value=a.status; 
         syncCustomSelect('assetStatus');
+        toggleIssueDesc();
+        if(a.status==="Faulty") document.getElementById("assetIssueDesc").value=a.issueDesc||"";
         document.getElementById("assetEmployee").value=a.employee||""; 
         let empObj = employees.find(e=>e.name===a.employee); 
         let disp = empObj?`${empObj.name} (${empObj.empId})`:(a.employee||"Select Employee..."); 
@@ -1860,8 +1862,10 @@ function saveAsset() {
         model=document.getElementById("assetModel").value.trim(), 
         emp=document.getElementById("assetEmployee").value.trim(), 
         stat=document.getElementById("assetStatus").value,
-        specs=(cat==="Laptop")?document.getElementById("assetSpecs").value.trim():""; 
+        specs=(cat==="Laptop")?document.getElementById("assetSpecs").value.trim():"",
+        issueDesc=(stat==="Faulty")?document.getElementById("assetIssueDesc").value.trim():""; 
     if(!tag||!brand||!model) { showToast("Asset Tag, Brand and Model are required",true); return; } 
+    if(stat==="Faulty" && !issueDesc) { showToast("Please enter an Issue Description for faulty asset",true); return; }
     if(serial && !editingAssetId && assets.some(a=>a.serial && a.serial === serial)) { showToast("Serial number already exists!", true); return; }
     if(serial && editingAssetId && assets.some(a=>a.id !== editingAssetId && a.serial && a.serial === serial)) { showToast("Serial number already exists!", true); return; }
     if(stat==="Assigned" && emp===""){ showToast("Select employee for assigned",true); return; } 
@@ -1869,8 +1873,8 @@ function saveAsset() {
     let nextId = assets.length?Math.max(...assets.map(a=>a.id))+1:1; 
     if(editingAssetId){ 
         let idx=assets.findIndex(a=>a.id===editingAssetId); 
-        if(idx!==-1) assets[idx]={...assets[idx],tag,serial,category:cat,brand,model,employee:emp,status:stat,specs}; 
-    } else { assets.push({id:nextId,tag,serial,category:cat,brand,model,employee:emp,status:stat,specs}); } 
+        if(idx!==-1) assets[idx]={...assets[idx],tag,serial,category:cat,brand,model,employee:emp,status:stat,specs,issueDesc}; 
+    } else { assets.push({id:nextId,tag,serial,category:cat,brand,model,employee:emp,status:stat,specs,issueDesc}); } 
     syncAssetsToFirebase(); closeAssetModal(); showToast("Saved"); 
 }
 
@@ -2015,7 +2019,18 @@ function onCategoryChange() {
     }
 }
 
-// ── ASSET EXPORT ──────────────────────────────────────────────
+function toggleIssueDesc() {
+    const stat = document.getElementById("assetStatus").value;
+    const grp = document.getElementById("issueDescGroup");
+    if(stat === "Faulty") {
+        grp.style.display = "block";
+    } else {
+        grp.style.display = "none";
+        document.getElementById("assetIssueDesc").value = "";
+    }
+}
+
+
 function exportAssetsExcel() {
     const headers = ["Asset Tag","Serial Number","Category","Brand","Model","Specs (Laptop only)","Employee","Status"];
     const rows = assets.map(a => [
@@ -2239,7 +2254,7 @@ async function init() {
     loadDepartmentsFromFirebase();
     attachRealtimeListeners(); 
     document.querySelectorAll('.nav-item').forEach(i=>i.addEventListener('click',()=>showPage(i.getAttribute('data-page')))); 
-    document.getElementById("addAssetBtn")?.addEventListener('click',()=>{ editingAssetId=null; document.getElementById("assetModalTitle").innerText="Add Asset"; document.getElementById("assetId").value=""; document.getElementById("assetTag").value=""; document.getElementById("assetSerial").value=""; refreshCategorySelectors(); document.getElementById("assetCategory").value=categories[0]||"Laptop"; syncCustomSelect('assetCategory'); onCategoryChange(); document.getElementById("assetSpecs").value=""; document.getElementById("assetBrand").value=""; document.getElementById("assetModel").value=""; document.getElementById("assetStatus").value="In Stock"; syncCustomSelect('assetStatus'); document.getElementById("assetEmployee").value=""; document.getElementById("selectedEmployeeDisplay").innerHTML=`Select Employee... <i class="fas fa-chevron-down"></i>`; populateEmployeeDropdown(""); document.getElementById("assetModal").classList.add("open"); }); 
+    document.getElementById("addAssetBtn")?.addEventListener('click',()=>{ editingAssetId=null; document.getElementById("assetModalTitle").innerText="Add Asset"; document.getElementById("assetId").value=""; document.getElementById("assetTag").value=""; document.getElementById("assetSerial").value=""; refreshCategorySelectors(); document.getElementById("assetCategory").value=categories[0]||"Laptop"; syncCustomSelect('assetCategory'); onCategoryChange(); document.getElementById("assetSpecs").value=""; document.getElementById("assetBrand").value=""; document.getElementById("assetModel").value=""; document.getElementById("assetStatus").value="In Stock"; syncCustomSelect('assetStatus'); document.getElementById("assetIssueDesc").value=""; document.getElementById("issueDescGroup").style.display="none"; document.getElementById("assetEmployee").value=""; document.getElementById("selectedEmployeeDisplay").innerHTML=`Select Employee... <i class="fas fa-chevron-down"></i>`; populateEmployeeDropdown(""); document.getElementById("assetModal").classList.add("open"); }); 
     document.getElementById("addEmployeeBtn")?.addEventListener('click',()=>{ editingEmployeeId=null; document.getElementById("employeeModalTitle").innerText="Add Employee"; document.getElementById("employeeId").value=""; document.getElementById("empName").value=""; document.getElementById("empId").value=""; document.getElementById("empDesignation").value=""; refreshDepartmentSelectors(); document.getElementById("empDept").value=departments[0] || "IT"; syncCustomSelect('empDept'); document.getElementById("employeeModal").classList.add("open"); }); 
     document.getElementById("saveAssetBtn")?.addEventListener('click',saveAsset); 
     document.getElementById("saveEmployeeBtn")?.addEventListener('click',saveEmployee); 
